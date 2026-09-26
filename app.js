@@ -1,19 +1,19 @@
 /* =========================================================
    NEXORA CLUB
    app.js
-   Core application controller
+   Core Application Controller
    ========================================================= */
 
 (() => {
   "use strict";
 
-  /* =========================
+  /* =========================================================
      CONFIG
-  ========================= */
+     ========================================================= */
 
   const CONFIG = {
     appName: "NEXORA CLUB",
-    storageKey: "nexora_state_v1",
+    storageKey: "nexora_club_state_v2",
     defaultCoins: 1250,
     defaultGems: 85,
     defaultLevel: 12,
@@ -21,15 +21,33 @@
     toastDuration: 2800
   };
 
-  /* =========================
+  /* =========================================================
      HELPERS
-  ========================= */
+     ========================================================= */
 
-  const $ = (selector, root = document) => root.querySelector(selector);
+  const $ = (selector, root = document) =>
+    root.querySelector(selector);
+
   const $$ = (selector, root = document) =>
     Array.from(root.querySelectorAll(selector));
 
-  const byId = (id) => document.getElementById(id);
+  const byId = (id) =>
+    document.getElementById(id);
+
+  const now = () => Date.now();
+
+  const createId = (prefix = "id") =>
+    `${prefix}_${Date.now()}_${Math.random()
+      .toString(36)
+      .slice(2, 9)}`;
+
+  const escapeHTML = (value) =>
+    String(value ?? "")
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
 
   const safeJSONParse = (value, fallback) => {
     try {
@@ -39,46 +57,33 @@
     }
   };
 
-  const escapeHTML = (value) => {
-    return String(value ?? "")
-      .replaceAll("&", "&amp;")
-      .replaceAll("<", "&lt;")
-      .replaceAll(">", "&gt;")
-      .replaceAll('"', "&quot;")
-      .replaceAll("'", "&#039;");
-  };
-
   const formatNumber = (number) => {
     const n = Number(number) || 0;
 
     if (n >= 1000000) {
-      return `${(n / 1000000).toFixed(1).replace(".0", "")}M`;
+      return `${(n / 1000000)
+        .toFixed(1)
+        .replace(".0", "")}M`;
     }
 
     if (n >= 1000) {
-      return `${(n / 1000).toFixed(1).replace(".0", "")}K`;
+      return `${(n / 1000)
+        .toFixed(1)
+        .replace(".0", "")}K`;
     }
 
     return n.toLocaleString("en-US");
   };
 
-  const now = () => Date.now();
-
-  const createId = (prefix = "id") => {
-    return `${prefix}_${Date.now()}_${Math.random()
-      .toString(36)
-      .slice(2, 9)}`;
-  };
-
-  /* =========================
+  /* =========================================================
      DEFAULT STATE
-  ========================= */
+     ========================================================= */
 
   const DEFAULT_STATE = {
     initialized: false,
 
     user: {
-      id: "user_local",
+      id: "local_user",
       name: "يوسف",
       username: "@nexora_user",
       avatar: "https://i.pravatar.cc/150?img=12",
@@ -168,6 +173,7 @@
         avatar: "https://i.pravatar.cc/150?img=11",
         online: true
       },
+
       {
         id: "friend_2",
         name: "نور",
@@ -175,6 +181,7 @@
         avatar: "https://i.pravatar.cc/150?img=32",
         online: true
       },
+
       {
         id: "friend_3",
         name: "آدم",
@@ -194,6 +201,7 @@
         host: "NEXORA",
         icon: "🎙️"
       },
+
       {
         id: "room_2",
         name: "Domino Night",
@@ -203,6 +211,7 @@
         host: "Ahmed",
         icon: "🁫"
       },
+
       {
         id: "room_3",
         name: "Music & Chill",
@@ -219,20 +228,22 @@
     blocked: []
   };
 
-  /* =========================
-     LOAD / SAVE STATE
-  ========================= */
+  /* =========================================================
+     STATE
+     ========================================================= */
 
   let state = loadState();
 
   function loadState() {
-    const stored = localStorage.getItem(CONFIG.storageKey);
+    const stored =
+      localStorage.getItem(CONFIG.storageKey);
 
     if (!stored) {
       return structuredClone(DEFAULT_STATE);
     }
 
-    const parsed = safeJSONParse(stored, null);
+    const parsed =
+      safeJSONParse(stored, null);
 
     if (!parsed || typeof parsed !== "object") {
       return structuredClone(DEFAULT_STATE);
@@ -241,10 +252,12 @@
     return {
       ...structuredClone(DEFAULT_STATE),
       ...parsed,
+
       user: {
         ...structuredClone(DEFAULT_STATE.user),
         ...(parsed.user || {})
       },
+
       settings: {
         ...structuredClone(DEFAULT_STATE.settings),
         ...(parsed.settings || {})
@@ -259,159 +272,400 @@
         JSON.stringify(state)
       );
     } catch (error) {
-      console.warn("NEXORA state could not be saved:", error);
+      console.warn(
+        "NEXORA: failed to save state",
+        error
+      );
     }
   }
 
-  /* =========================
-     DOM REFERENCES
-  ========================= */
+  /* =========================================================
+     DOM
+     ========================================================= */
 
   const DOM = {
-    loader: byId("appLoader"),
-    app: byId("app"),
-    loaderProgress: byId("loaderProgress"),
-    loaderPercent: byId("loaderPercent"),
+    loader: null,
+    app: null,
+    loaderProgress: null,
+    loaderPercent: null,
 
-    globalSearch: byId("globalSearch"),
-    headerCoins: byId("headerCoins"),
+    globalSearch: null,
+    headerCoins: null,
 
-    sidebar: byId("sidebar"),
-    mainContent: byId("mainContent"),
+    sidebar: null,
+    mainContent: null,
 
-    toastContainer: byId("toastContainer"),
-    modalRoot: byId("modalRoot"),
+    toastContainer: null,
+    modalRoot: null,
 
-    chatMessages: byId("chatMessages"),
-    messageInput: byId("messageInput"),
-    sendMessage: byId("sendMessage"),
+    chatMessages: null,
+    messageInput: null,
+    sendMessage: null,
 
-    videoCallOverlay: byId("videoCallOverlay"),
-    gameCallOverlay: byId("gameCallOverlay"),
+    videoCallOverlay: null,
+    gameCallOverlay: null,
 
-    emojiPanel: byId("emojiPanel")
+    emojiPanel: null
   };
 
-  /* =========================
-     INITIALIZATION
-  ========================= */
+  function cacheDOM() {
+    DOM.loader =
+      byId("appLoader") ||
+      $(".app-loader") ||
+      $(".loader") ||
+      $("[data-loader]");
 
-  document.addEventListener("DOMContentLoaded", init);
+    DOM.app =
+      byId("app") ||
+      $(".app") ||
+      $("main");
+
+    DOM.loaderProgress =
+      byId("loaderProgress") ||
+      $(".loader-progress") ||
+      $("[data-loader-progress]");
+
+    DOM.loaderPercent =
+      byId("loaderPercent") ||
+      $(".loader-percent") ||
+      $("[data-loader-percent]");
+
+    DOM.globalSearch =
+      byId("globalSearch") ||
+      $("[data-global-search]");
+
+    DOM.headerCoins =
+      byId("headerCoins") ||
+      $("[data-header-coins]");
+
+    DOM.sidebar =
+      byId("sidebar") ||
+      $(".sidebar");
+
+    DOM.mainContent =
+      byId("mainContent") ||
+      $(".main-content");
+
+    DOM.toastContainer =
+      byId("toastContainer") ||
+      $(".toast-container") ||
+      $("[data-toast-container]");
+
+    DOM.modalRoot =
+      byId("modalRoot") ||
+      $(".modal-root") ||
+      $("[data-modal-root]");
+
+    DOM.chatMessages =
+      byId("chatMessages") ||
+      $(".chat-messages");
+
+    DOM.messageInput =
+      byId("messageInput") ||
+      $(".message-input") ||
+      $("[data-message-input]");
+
+    DOM.sendMessage =
+      byId("sendMessage") ||
+      $("[data-send-message]");
+
+    DOM.videoCallOverlay =
+      byId("videoCallOverlay") ||
+      $(".video-call-overlay");
+
+    DOM.gameCallOverlay =
+      byId("gameCallOverlay") ||
+      $(".game-call-overlay");
+
+    DOM.emojiPanel =
+      byId("emojiPanel") ||
+      $(".emoji-panel");
+  }
+
+  /* =========================================================
+     INIT
+     ========================================================= */
 
   function init() {
-    setupLoader();
-    bindNavigation();
-    bindGlobalSearch();
-    bindChat();
-    bindGlobalClicks();
-    bindKeyboardShortcuts();
-    restoreTheme();
-    updateUserUI();
-    updateNotifications();
-    renderChatList();
-    renderCurrentChat();
-    setupEmojiPanel();
+    cacheDOM();
 
-    state.initialized = true;
-    saveState();
+    /*
+      Loader يبدأ أولاً.
+      حتى لو حصل خطأ في أي وظيفة ثانية،
+      لن يفضل الـLoader حاجباً للموقع.
+    */
+
+    setupLoader();
+
+    try {
+      bindNavigation();
+      bindGlobalSearch();
+      bindChat();
+      bindGlobalClicks();
+      bindKeyboardShortcuts();
+
+      restoreTheme();
+      updateUserUI();
+      updateNotifications();
+
+      renderChatList();
+      renderCurrentChat();
+
+      setupEmojiPanel();
+
+      state.initialized = true;
+
+      saveState();
+
+      document.documentElement.dataset.nexora =
+        "ready";
+
+    } catch (error) {
+      console.error(
+        "NEXORA initialization error:",
+        error
+      );
+
+      forceShowApplication();
+    }
   }
 
-  /* =========================
+  /* =========================================================
      LOADER
-  ========================= */
+     ========================================================= */
 
   function setupLoader() {
-    if (!DOM.loader) return;
+    const loader =
+      DOM.loader ||
+      byId("appLoader") ||
+      $(".app-loader") ||
+      $(".loader") ||
+      $("[data-loader]");
 
-    let progress = 0;
+    const progress =
+      DOM.loaderProgress ||
+      byId("loaderProgress") ||
+      $(".loader-progress") ||
+      $("[data-loader-progress]");
 
-    const interval = setInterval(() => {
-      progress += Math.floor(Math.random() * 12) + 6;
+    const percent =
+      DOM.loaderPercent ||
+      byId("loaderPercent") ||
+      $(".loader-percent") ||
+      $("[data-loader-percent]");
 
-      if (progress >= 100) {
-        progress = 100;
-        clearInterval(interval);
+    const app =
+      DOM.app ||
+      byId("app") ||
+      $(".app") ||
+      $("main");
 
-        if (DOM.loaderProgress) {
-          DOM.loaderProgress.style.width = "100%";
-        }
+    /*
+      لو الـindex لا يحتوي Loader،
+      افتح التطبيق مباشرة.
+    */
 
-        if (DOM.loaderPercent) {
-          DOM.loaderPercent.textContent = "100%";
-        }
-
-        setTimeout(() => {
-          DOM.loader.classList.add("loaded");
-
-          if (DOM.app) {
-            DOM.app.classList.add("ready");
-          }
-
-          setTimeout(() => {
-            DOM.loader.style.display = "none";
-          }, 500);
-        }, 250);
-
-        return;
-      }
-
-      if (DOM.loaderProgress) {
-        DOM.loaderProgress.style.width = `${progress}%`;
-      }
-
-      if (DOM.loaderPercent) {
-        DOM.loaderPercent.textContent = `${progress}%`;
-      }
-    }, 90);
-  }
-
-  /* =========================
-     NAVIGATION
-  ========================= */
-
-  function bindNavigation() {
-    document.addEventListener("click", (event) => {
-      const button = event.target.closest("[data-page]");
-
-      if (!button) return;
-
-      event.preventDefault();
-
-      const page = button.dataset.page;
-
-      if (!page) return;
-
-      navigate(page);
-    });
-  }
-
-  function navigate(page, options = {}) {
-    const pageElement = byId(`page-${page}`);
-
-    if (!pageElement) {
-      console.warn(`NEXORA: page-${page} was not found.`);
-      showToast("هذه الصفحة غير متاحة حالياً", "warning");
+    if (!loader) {
+      forceShowApplication();
       return;
     }
 
+    let value = 0;
+    let finished = false;
+
+    /*
+      نخلي البداية واضحة.
+    */
+
+    if (progress) {
+      progress.style.width = "0%";
+    }
+
+    if (percent) {
+      percent.textContent = "0%";
+    }
+
+    const finishLoader = () => {
+      if (finished) return;
+
+      finished = true;
+
+      value = 100;
+
+      if (progress) {
+        progress.style.width = "100%";
+      }
+
+      if (percent) {
+        percent.textContent = "100%";
+      }
+
+      /*
+        مهم جداً:
+        التطبيق يظهر قبل إخفاء الـLoader.
+      */
+
+      if (app) {
+        app.classList.add("ready");
+
+        app.style.display = "";
+        app.style.visibility = "visible";
+        app.style.opacity = "1";
+        app.style.pointerEvents = "auto";
+      }
+
+      loader.classList.add("loaded");
+
+      loader.style.pointerEvents = "none";
+      loader.style.opacity = "0";
+      loader.style.visibility = "hidden";
+
+      setTimeout(() => {
+        if (loader && loader.parentNode) {
+          loader.remove();
+        }
+      }, 550);
+    };
+
+    const timer =
+      setInterval(() => {
+        value +=
+          Math.floor(Math.random() * 10) + 5;
+
+        if (value >= 100) {
+          clearInterval(timer);
+          finishLoader();
+          return;
+        }
+
+        if (progress) {
+          progress.style.width =
+            `${value}%`;
+        }
+
+        if (percent) {
+          percent.textContent =
+            `${value}%`;
+        }
+      }, 90);
+
+    /*
+      حماية من أي تعليق.
+    */
+
+    setTimeout(() => {
+      clearInterval(timer);
+      finishLoader();
+    }, 5000);
+  }
+
+  function forceShowApplication() {
+    const loader =
+      DOM.loader ||
+      byId("appLoader") ||
+      $(".app-loader") ||
+      $(".loader") ||
+      $("[data-loader]");
+
+    const app =
+      DOM.app ||
+      byId("app") ||
+      $(".app") ||
+      $("main");
+
+    if (app) {
+      app.classList.add("ready");
+
+      app.style.display = "";
+      app.style.visibility = "visible";
+      app.style.opacity = "1";
+      app.style.pointerEvents = "auto";
+    }
+
+    if (loader) {
+      loader.style.opacity = "0";
+      loader.style.visibility = "hidden";
+      loader.style.pointerEvents = "none";
+
+      setTimeout(() => {
+        if (loader.parentNode) {
+          loader.remove();
+        }
+      }, 300);
+    }
+  }
+
+  /* =========================================================
+     NAVIGATION
+     ========================================================= */
+
+  function bindNavigation() {
+    document.addEventListener(
+      "click",
+      (event) => {
+        const button =
+          event.target.closest(
+            "[data-page]"
+          );
+
+        if (!button) return;
+
+        const page =
+          button.dataset.page;
+
+        if (!page) return;
+
+        event.preventDefault();
+
+        navigate(page);
+      }
+    );
+  }
+
+  function navigate(page, options = {}) {
+    const pageElement =
+      byId(`page-${page}`);
+
+    /*
+      لو الصفحة موجودة.
+    */
+
+    if (pageElement) {
+      $$(".page").forEach(
+        (element) => {
+          element.classList.remove(
+            "active",
+            "show"
+          );
+        }
+      );
+
+      pageElement.classList.add(
+        "active"
+      );
+
+      requestAnimationFrame(() => {
+        pageElement.classList.add(
+          "show"
+        );
+      });
+    }
+
+    /*
+      حتى لو الصفحة لا تستخدم
+      page-ID، نخلي التنقل لا يكسر التطبيق.
+    */
+
     state.currentPage = page;
 
-    $$(".page").forEach((element) => {
-      element.classList.remove("active", "show");
-    });
-
-    pageElement.classList.add("active");
-
-    requestAnimationFrame(() => {
-      pageElement.classList.add("show");
-    });
-
-    $$("[data-page]").forEach((element) => {
-      element.classList.toggle(
-        "active",
-        element.dataset.page === page
-      );
-    });
+    $$("[data-page]").forEach(
+      (element) => {
+        element.classList.toggle(
+          "active",
+          element.dataset.page === page
+        );
+      }
+    );
 
     if (!options.keepScroll) {
       window.scrollTo({
@@ -425,206 +679,324 @@
     saveState();
 
     window.dispatchEvent(
-      new CustomEvent("nexora:navigate", {
-        detail: { page }
-      })
+      new CustomEvent(
+        "nexora:navigate",
+        {
+          detail: { page }
+        }
+      )
     );
   }
 
-  /* =========================
+  /* =========================================================
      SEARCH
-  ========================= */
+     ========================================================= */
 
   function bindGlobalSearch() {
     if (!DOM.globalSearch) return;
 
-    DOM.globalSearch.addEventListener("input", (event) => {
-      performSearch(event.target.value);
-    });
-
-    DOM.globalSearch.addEventListener("keydown", (event) => {
-      if (event.key === "Enter") {
-        const value = event.target.value.trim();
-
-        if (!value) return;
-
-        navigate("discover");
-        showToast(`نتائج البحث عن: ${value}`, "info");
+    DOM.globalSearch.addEventListener(
+      "input",
+      (event) => {
+        performSearch(
+          event.target.value
+        );
       }
+    );
 
-      if (event.key === "Escape") {
-        DOM.globalSearch.value = "";
-        performSearch("");
-        DOM.globalSearch.blur();
+    DOM.globalSearch.addEventListener(
+      "keydown",
+      (event) => {
+        if (event.key === "Enter") {
+          const value =
+            event.target.value.trim();
+
+          if (!value) return;
+
+          navigate("discover");
+
+          showToast(
+            `نتائج البحث عن: ${value}`,
+            "info"
+          );
+        }
+
+        if (event.key === "Escape") {
+          DOM.globalSearch.value = "";
+          performSearch("");
+          DOM.globalSearch.blur();
+        }
       }
-    });
+    );
   }
 
   function performSearch(value) {
-    const query = value.trim().toLowerCase();
+    const query =
+      String(value || "")
+        .trim()
+        .toLowerCase();
 
-    const searchable = $$(
-      "[data-searchable], .user-card, .room-card, .game-card, .post-card"
-    );
-
-    if (!searchable.length) return;
-
-    searchable.forEach((element) => {
-      if (!query) {
-        element.classList.remove("search-hidden");
-        return;
-      }
-
-      const text = element.textContent.toLowerCase();
-
-      element.classList.toggle(
-        "search-hidden",
-        !text.includes(query)
+    const searchable =
+      $$(
+        "[data-searchable], .user-card, .room-card, .game-card, .post-card"
       );
-    });
+
+    searchable.forEach(
+      (element) => {
+        if (!query) {
+          element.classList.remove(
+            "search-hidden"
+          );
+          return;
+        }
+
+        const text =
+          element.textContent
+            .toLowerCase();
+
+        element.classList.toggle(
+          "search-hidden",
+          !text.includes(query)
+        );
+      }
+    );
   }
 
-  /* =========================
+  /* =========================================================
      CHAT
-  ========================= */
+     ========================================================= */
 
   function bindChat() {
     if (DOM.sendMessage) {
-      DOM.sendMessage.addEventListener("click", sendCurrentMessage);
+      DOM.sendMessage.addEventListener(
+        "click",
+        sendCurrentMessage
+      );
     }
 
     if (DOM.messageInput) {
-      DOM.messageInput.addEventListener("keydown", (event) => {
-        if (event.key === "Enter" && !event.shiftKey) {
-          event.preventDefault();
-          sendCurrentMessage();
+      DOM.messageInput.addEventListener(
+        "keydown",
+        (event) => {
+          if (
+            event.key === "Enter" &&
+            !event.shiftKey
+          ) {
+            event.preventDefault();
+            sendCurrentMessage();
+          }
         }
-      });
+      );
 
-      DOM.messageInput.addEventListener("input", () => {
-        const value = DOM.messageInput.value;
-
-        if (value.length > CONFIG.maxMessageLength) {
-          DOM.messageInput.value =
-            value.slice(0, CONFIG.maxMessageLength);
+      DOM.messageInput.addEventListener(
+        "input",
+        () => {
+          if (
+            DOM.messageInput.value.length >
+            CONFIG.maxMessageLength
+          ) {
+            DOM.messageInput.value =
+              DOM.messageInput.value.slice(
+                0,
+                CONFIG.maxMessageLength
+              );
+          }
         }
-      });
+      );
     }
   }
 
   function getCurrentChat() {
     return state.chats.find(
-      (chat) => chat.id === state.currentChat
+      (chat) =>
+        chat.id === state.currentChat
     );
   }
 
   function openChat(chatId) {
-    const chat = state.chats.find(
-      (item) => item.id === chatId
-    );
+    const chat =
+      state.chats.find(
+        (item) =>
+          item.id === chatId
+      );
 
     if (!chat) return;
 
-    state.currentChat = chat.id;
+    state.currentChat =
+      chat.id;
+
     chat.unread = 0;
 
     renderChatList();
     renderCurrentChat();
+
     saveState();
 
     navigate("messages");
   }
 
   function renderChatList() {
-    const list = byId("chatList");
+    const list =
+      byId("chatList") ||
+      $(".chat-list");
 
     if (!list) return;
 
-    list.innerHTML = state.chats
-      .map((chat) => {
-        const last =
-          chat.messages?.[chat.messages.length - 1];
+    list.innerHTML =
+      state.chats
+        .map((chat) => {
+          const last =
+            chat.messages?.[
+              chat.messages.length - 1
+            ];
 
-        return `
-          <button
-            class="chat-item"
-            data-chat-id="${escapeHTML(chat.id)}"
-            type="button"
-          >
-            <span class="chat-avatar-wrap">
-              <img
-                class="chat-avatar"
-                src="${escapeHTML(chat.avatar)}"
-                alt=""
-              >
+          return `
+            <button
+              class="chat-item"
+              data-chat-id="${escapeHTML(
+                chat.id
+              )}"
+              type="button"
+            >
+
+              <span class="chat-avatar-wrap">
+
+                <img
+                  class="chat-avatar"
+                  src="${escapeHTML(
+                    chat.avatar
+                  )}"
+                  alt=""
+                >
+
+                ${
+                  chat.online
+                    ? `
+                      <span
+                        class="online-dot"
+                      ></span>
+                    `
+                    : ""
+                }
+
+              </span>
+
+              <span class="chat-info">
+
+                <span class="chat-name">
+                  ${escapeHTML(
+                    chat.name
+                  )}
+                </span>
+
+                <span class="chat-preview">
+                  ${escapeHTML(
+                    last?.text ||
+                      "ابدأ المحادثة"
+                  )}
+                </span>
+
+              </span>
+
               ${
-                chat.online
-                  ? '<span class="online-dot"></span>'
+                chat.unread
+                  ? `
+                    <span
+                      class="chat-unread"
+                    >
+                      ${chat.unread}
+                    </span>
+                  `
                   : ""
               }
-            </span>
 
-            <span class="chat-info">
-              <span class="chat-name">
-                ${escapeHTML(chat.name)}
-              </span>
+            </button>
+          `;
+        })
+        .join("");
 
-              <span class="chat-preview">
-                ${escapeHTML(last?.text || "ابدأ المحادثة")}
-              </span>
-            </span>
-
-            ${
-              chat.unread
-                ? `<span class="chat-unread">${chat.unread}</span>`
-                : ""
-            }
-          </button>
-        `;
-      })
-      .join("");
-
-    $$(".chat-item", list).forEach((item) => {
-      item.addEventListener("click", () => {
-        openChat(item.dataset.chatId);
-      });
-    });
+    $$(".chat-item", list).forEach(
+      (item) => {
+        item.addEventListener(
+          "click",
+          () => {
+            openChat(
+              item.dataset.chatId
+            );
+          }
+        );
+      }
+    );
   }
 
   function renderCurrentChat() {
     if (!DOM.chatMessages) return;
 
-    const chat = getCurrentChat();
+    const chat =
+      getCurrentChat();
 
     if (!chat) {
       DOM.chatMessages.innerHTML = `
         <div class="empty-state">
-          <div class="empty-icon">💬</div>
-          <h3>اختر محادثة</h3>
-          <p>ابدأ التواصل مع أصدقائك على NEXORA.</p>
+
+          <div class="empty-icon">
+            💬
+          </div>
+
+          <h3>
+            اختر محادثة
+          </h3>
+
+          <p>
+            ابدأ التواصل مع أصدقائك
+            على NEXORA.
+          </p>
+
         </div>
       `;
+
       return;
     }
 
-    DOM.chatMessages.innerHTML = chat.messages
-      .map((message) => {
-        const mine = message.sender === "me";
+    DOM.chatMessages.innerHTML =
+      chat.messages
+        .map((message) => {
+          const mine =
+            message.sender === "me";
 
-        return `
-          <div class="message-row ${mine ? "mine" : "theirs"}">
-            <div class="message-bubble">
-              <div class="message-text">
-                ${escapeHTML(message.text)}
+          const system =
+            message.sender ===
+            "system";
+
+          return `
+            <div
+              class="
+                message-row
+                ${mine ? "mine" : "theirs"}
+                ${system ? "system-message" : ""}
+              "
+            >
+
+              <div class="message-bubble">
+
+                <div class="message-text">
+                  ${escapeHTML(
+                    message.text
+                  )}
+                </div>
+
+                <div class="message-time">
+                  ${formatTime(
+                    message.time
+                  )}
+                </div>
+
               </div>
-              <div class="message-time">
-                ${formatTime(message.time)}
-              </div>
+
             </div>
-          </div>
-        `;
-      })
-      .join("");
+          `;
+        })
+        .join("");
 
     DOM.chatMessages.scrollTop =
       DOM.chatMessages.scrollHeight;
@@ -633,18 +1005,21 @@
   function sendCurrentMessage() {
     if (!DOM.messageInput) return;
 
-    const text = DOM.messageInput.value.trim();
+    const text =
+      DOM.messageInput.value.trim();
 
     if (!text) return;
 
-    let chat = getCurrentChat();
+    let chat =
+      getCurrentChat();
 
     if (!chat) {
       chat = createChat({
         name: "محادثة جديدة"
       });
 
-      state.currentChat = chat.id;
+      state.currentChat =
+        chat.id;
     }
 
     chat.messages.push({
@@ -664,23 +1039,32 @@
     playSound("message");
 
     /*
-      هنا مكان ربط WebSocket / Firebase / Supabase لاحقاً.
-      الواجهة نفسها لا تحتاج تغيير.
+      لاحقاً:
+      WebSocket / Firebase / Supabase
+      يمكن توصيله هنا.
     */
 
     setTimeout(() => {
-      simulateIncomingReply(chat.id);
+      simulateIncomingReply(
+        chat.id
+      );
     }, 900);
   }
 
-  function simulateIncomingReply(chatId) {
-    const chat = state.chats.find(
-      (item) => item.id === chatId
-    );
+  function simulateIncomingReply(
+    chatId
+  ) {
+    const chat =
+      state.chats.find(
+        (item) =>
+          item.id === chatId
+      );
 
     if (!chat) return;
 
-    if (Math.random() > 0.45) return;
+    if (Math.random() > 0.45) {
+      return;
+    }
 
     chat.messages.push({
       id: createId("msg"),
@@ -689,23 +1073,32 @@
       time: now()
     });
 
-    if (state.currentChat !== chatId) {
+    if (
+      state.currentChat !==
+      chatId
+    ) {
       chat.unread += 1;
     }
 
     renderChatList();
     renderCurrentChat();
+
     updateNotifications();
+
     saveState();
   }
 
   function createChat(data = {}) {
     const chat = {
       id: createId("chat"),
-      name: data.name || "مستخدم NEXORA",
+      name:
+        data.name ||
+        "مستخدم NEXORA",
+
       avatar:
         data.avatar ||
         "https://i.pravatar.cc/150?img=20",
+
       online: true,
       unread: 0,
       messages: []
@@ -717,227 +1110,344 @@
   }
 
   function formatTime(timestamp) {
-    const date = new Date(timestamp);
+    const date =
+      new Date(timestamp);
 
-    return date.toLocaleTimeString("ar-EG", {
-      hour: "2-digit",
-      minute: "2-digit"
-    });
+    return date.toLocaleTimeString(
+      "ar-EG",
+      {
+        hour: "2-digit",
+        minute: "2-digit"
+      }
+    );
   }
 
-  /* =========================
-     GLOBAL CLICK HANDLER
-  ========================= */
+  /* =========================================================
+     GLOBAL ACTIONS
+     ========================================================= */
 
   function bindGlobalClicks() {
-    document.addEventListener("click", (event) => {
-      const target = event.target;
+    document.addEventListener(
+      "click",
+      (event) => {
+        const target =
+          event.target;
 
-      /* ---------- Like ---------- */
+        /* LIKE */
 
-      const likeButton =
-        target.closest("[data-like]");
+        const likeButton =
+          target.closest(
+            "[data-like]"
+          );
 
-      if (likeButton) {
-        event.preventDefault();
+        if (likeButton) {
+          event.preventDefault();
 
-        const liked =
-          likeButton.classList.toggle("liked");
+          const liked =
+            likeButton.classList.toggle(
+              "liked"
+            );
 
-        likeButton.dataset.liked = liked
-          ? "true"
-          : "false";
+          likeButton.dataset.liked =
+            liked
+              ? "true"
+              : "false";
 
-        updateLikeCounter(likeButton, liked);
+          updateLikeCounter(
+            likeButton,
+            liked
+          );
 
-        if (liked) {
-          playSound("like");
+          if (liked) {
+            playSound("like");
+          }
+
+          return;
         }
 
-        return;
+        /* FAVORITE */
+
+        const favoriteButton =
+          target.closest(
+            "[data-favorite]"
+          );
+
+        if (favoriteButton) {
+          event.preventDefault();
+
+          toggleFavorite(
+            favoriteButton.dataset
+              .favorite,
+            favoriteButton
+          );
+
+          return;
+        }
+
+        /* FOLLOW */
+
+        const followButton =
+          target.closest(
+            "[data-follow]"
+          );
+
+        if (followButton) {
+          event.preventDefault();
+
+          toggleFollow(
+            followButton
+          );
+
+          return;
+        }
+
+        /* COINS */
+
+        const coinButton =
+          target.closest(
+            "[data-buy-coins]"
+          );
+
+        if (coinButton) {
+          event.preventDefault();
+
+          const amount =
+            Number(
+              coinButton.dataset
+                .buyCoins
+            ) || 0;
+
+          purchaseCoins(amount);
+
+          return;
+        }
+
+        /* GIFT */
+
+        const giftButton =
+          target.closest(
+            "[data-gift]"
+          );
+
+        if (giftButton) {
+          event.preventDefault();
+
+          const gift =
+            giftButton.dataset
+              .gift ||
+            "هدية";
+
+          const price =
+            Number(
+              giftButton.dataset
+                .price
+            ) || 0;
+
+          sendGift(
+            gift,
+            price
+          );
+
+          return;
+        }
+
+        /* ROOM */
+
+        const roomButton =
+          target.closest(
+            "[data-room-id]"
+          );
+
+        if (roomButton) {
+          event.preventDefault();
+
+          openRoom(
+            roomButton.dataset
+              .roomId
+          );
+
+          return;
+        }
+
+        /* GAME */
+
+        const gameButton =
+          target.closest(
+            "[data-game]"
+          );
+
+        if (gameButton) {
+          event.preventDefault();
+
+          openGame(
+            gameButton.dataset
+              .game
+          );
+
+          return;
+        }
+
+        /* CLOSE MODAL */
+
+        if (
+          target.matches(
+            "[data-close-modal]"
+          ) ||
+          target.closest(
+            "[data-close-modal]"
+          )
+        ) {
+          closeModal();
+          return;
+        }
+
+        /* THEME */
+
+        const themeButton =
+          target.closest(
+            "[data-theme-toggle]"
+          );
+
+        if (themeButton) {
+          event.preventDefault();
+
+          toggleTheme();
+
+          return;
+        }
+
+        /* SIDEBAR */
+
+        const menuButton =
+          target.closest(
+            "[data-menu-toggle]"
+          );
+
+        if (menuButton) {
+          event.preventDefault();
+
+          toggleSidebar();
+
+          return;
+        }
+
+        /* VIDEO CALL */
+
+        const videoCallButton =
+          target.closest(
+            "[data-video-call]"
+          );
+
+        if (videoCallButton) {
+          event.preventDefault();
+
+          startVideoCall();
+
+          return;
+        }
+
+        /* VOICE CALL */
+
+        const voiceCallButton =
+          target.closest(
+            "[data-voice-call]"
+          );
+
+        if (voiceCallButton) {
+          event.preventDefault();
+
+          startVoiceCall();
+
+          return;
+        }
+
+        /* END CALL */
+
+        const endCallButton =
+          target.closest(
+            "[data-end-call]"
+          );
+
+        if (endCallButton) {
+          event.preventDefault();
+
+          endCall();
+
+          return;
+        }
+
+        /* NOTIFICATIONS */
+
+        const notificationButton =
+          target.closest(
+            "[data-notifications]"
+          );
+
+        if (notificationButton) {
+          event.preventDefault();
+
+          navigate(
+            "notifications"
+          );
+
+          markNotificationsRead();
+
+          return;
+        }
       }
-
-      /* ---------- Favorite ---------- */
-
-      const favoriteButton =
-        target.closest("[data-favorite]");
-
-      if (favoriteButton) {
-        event.preventDefault();
-
-        const itemId =
-          favoriteButton.dataset.favorite;
-
-        toggleFavorite(itemId, favoriteButton);
-
-        return;
-      }
-
-      /* ---------- Follow ---------- */
-
-      const followButton =
-        target.closest("[data-follow]");
-
-      if (followButton) {
-        event.preventDefault();
-
-        toggleFollow(followButton);
-
-        return;
-      }
-
-      /* ---------- Coin purchase ---------- */
-
-      const coinButton =
-        target.closest("[data-buy-coins]");
-
-      if (coinButton) {
-        event.preventDefault();
-
-        const amount =
-          Number(coinButton.dataset.buyCoins) || 0;
-
-        purchaseCoins(amount);
-
-        return;
-      }
-
-      /* ---------- Gift ---------- */
-
-      const giftButton =
-        target.closest("[data-gift]");
-
-      if (giftButton) {
-        event.preventDefault();
-
-        const gift =
-          giftButton.dataset.gift || "هدية";
-
-        const price =
-          Number(giftButton.dataset.price) || 0;
-
-        sendGift(gift, price);
-
-        return;
-      }
-
-      /* ---------- Room ---------- */
-
-      const roomButton =
-        target.closest("[data-room-id]");
-
-      if (roomButton) {
-        event.preventDefault();
-
-        openRoom(roomButton.dataset.roomId);
-
-        return;
-      }
-
-      /* ---------- Game ---------- */
-
-      const gameButton =
-        target.closest("[data-game]");
-
-      if (gameButton) {
-        event.preventDefault();
-
-        openGame(gameButton.dataset.game);
-
-        return;
-      }
-
-      /* ---------- Modal close ---------- */
-
-      if (
-        target.matches("[data-close-modal]") ||
-        target.closest("[data-close-modal]")
-      ) {
-        closeModal();
-        return;
-      }
-
-      /* ---------- Theme ---------- */
-
-      const themeButton =
-        target.closest("[data-theme-toggle]");
-
-      if (themeButton) {
-        event.preventDefault();
-        toggleTheme();
-        return;
-      }
-
-      /* ---------- Menu ---------- */
-
-      const menuButton =
-        target.closest("[data-menu-toggle]");
-
-      if (menuButton) {
-        event.preventDefault();
-        toggleSidebar();
-        return;
-      }
-
-      /* ---------- Video call ---------- */
-
-      const videoCallButton =
-        target.closest("[data-video-call]");
-
-      if (videoCallButton) {
-        event.preventDefault();
-        startVideoCall();
-        return;
-      }
-
-      /* ---------- Voice call ---------- */
-
-      const voiceCallButton =
-        target.closest("[data-voice-call]");
-
-      if (voiceCallButton) {
-        event.preventDefault();
-        startVoiceCall();
-        return;
-      }
-
-      /* ---------- End call ---------- */
-
-      const endCallButton =
-        target.closest("[data-end-call]");
-
-      if (endCallButton) {
-        event.preventDefault();
-        endCall();
-        return;
-      }
-    });
+    );
   }
 
-  /* =========================
+  /* =========================================================
      LIKE
-  ========================= */
+     ========================================================= */
 
-  function updateLikeCounter(button, liked) {
+  function updateLikeCounter(
+    button,
+    liked
+  ) {
+    const container =
+      button.closest(
+        "[data-like-container]"
+      );
+
+    if (!container) return;
+
     const counter =
-      button.closest("[data-like-container]")
-        ?.querySelector("[data-like-count]");
+      container.querySelector(
+        "[data-like-count]"
+      );
 
     if (!counter) return;
 
     const current =
-      Number(counter.textContent.replace(/\D/g, "")) || 0;
+      Number(
+        counter.textContent.replace(
+          /\D/g,
+          ""
+        )
+      ) || 0;
 
-    counter.textContent = formatNumber(
-      Math.max(0, liked ? current + 1 : current - 1)
-    );
+    const next =
+      liked
+        ? current + 1
+        : Math.max(
+            0,
+            current - 1
+          );
+
+    counter.textContent =
+      formatNumber(next);
   }
 
-  /* =========================
+  /* =========================================================
      FAVORITES
-  ========================= */
+     ========================================================= */
 
-  function toggleFavorite(id, button) {
+  function toggleFavorite(
+    id,
+    button
+  ) {
     if (!id) return;
 
     const index =
@@ -945,29 +1455,49 @@
 
     if (index === -1) {
       state.favorites.push(id);
-      button.classList.add("active");
 
-      showToast("تمت الإضافة إلى المفضلة ⭐", "success");
+      button?.classList.add(
+        "active"
+      );
+
+      showToast(
+        "تمت الإضافة إلى المفضلة ⭐",
+        "success"
+      );
     } else {
-      state.favorites.splice(index, 1);
-      button.classList.remove("active");
+      state.favorites.splice(
+        index,
+        1
+      );
 
-      showToast("تمت الإزالة من المفضلة", "info");
+      button?.classList.remove(
+        "active"
+      );
+
+      showToast(
+        "تمت الإزالة من المفضلة",
+        "info"
+      );
     }
 
     saveState();
   }
 
-  /* =========================
+  /* =========================================================
      FOLLOW
-  ========================= */
+     ========================================================= */
 
   function toggleFollow(button) {
+    if (!button) return;
+
     const followed =
-      button.dataset.followed === "true";
+      button.dataset.followed ===
+      "true";
 
     button.dataset.followed =
-      followed ? "false" : "true";
+      followed
+        ? "false"
+        : "true";
 
     button.classList.toggle(
       "following",
@@ -975,74 +1505,124 @@
     );
 
     button.textContent =
-      followed ? "متابعة" : "متابَع ✓";
-
-    showToast(
       followed
-        ? "تم إلغاء المتابعة"
-        : "تمت المتابعة بنجاح ✓",
-      followed ? "info" : "success"
-    );
+        ? "متابعة"
+        : "متابَع ✓";
 
     if (!followed) {
       state.user.following += 1;
     } else {
       state.user.following =
-        Math.max(0, state.user.following - 1);
+        Math.max(
+          0,
+          state.user.following - 1
+        );
     }
+
+    showToast(
+      followed
+        ? "تم إلغاء المتابعة"
+        : "تمت المتابعة بنجاح ✓",
+      followed
+        ? "info"
+        : "success"
+    );
 
     saveState();
   }
 
-  /* =========================
-     COINS
-  ========================= */
+  /* =========================================================
+     USER
+     ========================================================= */
 
   function updateUserUI() {
     if (DOM.headerCoins) {
       DOM.headerCoins.textContent =
-        formatNumber(state.user.coins);
+        formatNumber(
+          state.user.coins
+        );
     }
 
-    $$("[data-user-name]").forEach((element) => {
-      element.textContent = state.user.name;
-    });
+    $$("[data-user-name]")
+      .forEach((element) => {
+        element.textContent =
+          state.user.name;
+      });
 
-    $$("[data-user-coins]").forEach((element) => {
-      element.textContent =
-        formatNumber(state.user.coins);
-    });
+    $$("[data-user-coins]")
+      .forEach((element) => {
+        element.textContent =
+          formatNumber(
+            state.user.coins
+          );
+      });
 
-    $$("[data-user-gems]").forEach((element) => {
-      element.textContent =
-        formatNumber(state.user.gems);
-    });
+    $$("[data-user-gems]")
+      .forEach((element) => {
+        element.textContent =
+          formatNumber(
+            state.user.gems
+          );
+      });
 
-    $$("[data-user-level]").forEach((element) => {
-      element.textContent =
-        state.user.level;
-    });
+    $$("[data-user-level]")
+      .forEach((element) => {
+        element.textContent =
+          state.user.level;
+      });
 
-    $$("[data-user-avatar]").forEach((element) => {
-      if (element.tagName === "IMG") {
-        element.src = state.user.avatar;
-      } else {
-        element.style.backgroundImage =
-          `url("${state.user.avatar}")`;
-      }
-    });
+    $$("[data-user-avatar]")
+      .forEach((element) => {
+        if (
+          element.tagName === "IMG"
+        ) {
+          element.src =
+            state.user.avatar;
+        } else {
+          element.style.backgroundImage =
+            `url("${state.user.avatar}")`;
+        }
+      });
+
+    $$("[data-user-followers]")
+      .forEach((element) => {
+        element.textContent =
+          formatNumber(
+            state.user.followers
+          );
+      });
+
+    $$("[data-user-following]")
+      .forEach((element) => {
+        element.textContent =
+          formatNumber(
+            state.user.following
+          );
+      });
   }
 
+  /* =========================================================
+     COINS
+     ========================================================= */
+
   function purchaseCoins(amount) {
-    if (!amount || amount <= 0) return;
+    if (
+      !amount ||
+      amount <= 0
+    ) {
+      return;
+    }
 
     state.user.coins += amount;
 
     updateUserUI();
+
     saveState();
 
     showToast(
-      `تمت إضافة ${formatNumber(amount)} كوينز 🪙`,
+      `تمت إضافة ${formatNumber(
+        amount
+      )} كوينز 🪙`,
       "success"
     );
 
@@ -1050,11 +1630,17 @@
   }
 
   function spendCoins(amount) {
-    if (!amount || amount <= 0) {
+    if (
+      !amount ||
+      amount <= 0
+    ) {
       return true;
     }
 
-    if (state.user.coins < amount) {
+    if (
+      state.user.coins <
+      amount
+    ) {
       showToast(
         "رصيد الكوينز غير كافٍ 🪙",
         "warning"
@@ -1066,17 +1652,25 @@
     state.user.coins -= amount;
 
     updateUserUI();
+
     saveState();
 
     return true;
   }
 
-  /* =========================
+  /* =========================================================
      GIFTS
-  ========================= */
+     ========================================================= */
 
-  function sendGift(name, price) {
-    if (!spendCoins(price)) return;
+  function sendGift(
+    name,
+    price
+  ) {
+    if (
+      !spendCoins(price)
+    ) {
+      return;
+    }
 
     showToast(
       `تم إرسال ${name} 🎁`,
@@ -1086,20 +1680,22 @@
     createNotification({
       icon: "🎁",
       title: "هدية",
-      text: `تم إرسال ${name} بنجاح`
+      text:
+        `تم إرسال ${name} بنجاح`
     });
 
     playSound("gift");
   }
 
-  /* =========================
+  /* =========================================================
      ROOMS
-  ========================= */
+     ========================================================= */
 
   function openRoom(roomId) {
     const room =
       state.rooms.find(
-        (item) => item.id === roomId
+        (item) =>
+          item.id === roomId
       );
 
     if (!room) {
@@ -1107,29 +1703,43 @@
         "الغرفة غير موجودة",
         "warning"
       );
+
       return;
     }
 
-    state.currentRoom = room.id;
+    state.currentRoom =
+      room.id;
+
     saveState();
 
     openModal(`
       <div class="room-modal">
+
         <div class="room-modal-icon">
-          ${escapeHTML(room.icon)}
+          ${escapeHTML(
+            room.icon
+          )}
         </div>
 
-        <h2>${escapeHTML(room.name)}</h2>
+        <h2>
+          ${escapeHTML(
+            room.name
+          )}
+        </h2>
 
         <p>
-          ${formatNumber(room.online)}
+          ${formatNumber(
+            room.online
+          )}
           شخص متصل الآن
         </p>
 
         <div class="room-actions">
+
           <button
             class="primary-btn"
             data-enter-room
+            type="button"
           >
             دخول الغرفة
           </button>
@@ -1137,10 +1747,13 @@
           <button
             class="secondary-btn"
             data-close-modal
+            type="button"
           >
             إلغاء
           </button>
+
         </div>
+
       </div>
     `);
 
@@ -1148,94 +1761,159 @@
       $("[data-enter-room]");
 
     if (enter) {
-      enter.addEventListener("click", () => {
-        closeModal();
+      enter.addEventListener(
+        "click",
+        () => {
+          closeModal();
 
-        showToast(
-          `دخلت ${room.name} 🎙️`,
-          "success"
-        );
+          showToast(
+            `دخلت ${room.name} 🎙️`,
+            "success"
+          );
 
-        /*
-          لاحقاً:
-          WebSocket / WebRTC / server.js
-        */
-      });
+          window.dispatchEvent(
+            new CustomEvent(
+              "nexora:room-enter",
+              {
+                detail: {
+                  room
+                }
+              }
+            )
+          );
+        }
+      );
     }
   }
 
-  /* =========================
+  /* =========================================================
      GAMES
-  ========================= */
+     ========================================================= */
 
-  function openGame(gameName) {
+  function openGame(
+    gameName
+  ) {
     const game =
-      String(gameName || "game");
+      String(
+        gameName ||
+        "game"
+      );
 
     window.dispatchEvent(
-      new CustomEvent("nexora:open-game", {
-        detail: {
-          game
+      new CustomEvent(
+        "nexora:open-game",
+        {
+          detail: {
+            game
+          }
         }
-      })
+      )
     );
 
-    if (typeof window.NexoraGames?.open === "function") {
-      window.NexoraGames.open(game);
+    /*
+      لو games.js موجود ومجهز،
+      يستخدمه مباشرة.
+    */
+
+    if (
+      window.NexoraGames &&
+      typeof window.NexoraGames.open ===
+        "function"
+    ) {
+      window.NexoraGames.open(
+        game
+      );
+
       return;
     }
 
+    /*
+      واجهة مؤقتة آمنة لحد
+      ما نركب games.js.
+    */
+
     openModal(`
       <div class="game-launcher">
-        <div class="game-launcher-icon">🎮</div>
 
-        <h2>${escapeHTML(game)}</h2>
+        <div class="game-launcher-icon">
+          🎮
+        </div>
+
+        <h2>
+          ${escapeHTML(game)}
+        </h2>
 
         <p>
-          اللعبة جاهزة للربط بمحرك الألعاب في
-          <b>games.js</b>.
+          اللعبة جاهزة للربط بمحرك
+          الألعاب في games.js.
         </p>
 
         <button
           class="primary-btn"
           data-close-modal
+          type="button"
         >
           رجوع
         </button>
+
       </div>
     `);
   }
 
-  /* =========================
+  /* =========================================================
      NOTIFICATIONS
-  ========================= */
+     ========================================================= */
 
-  function createNotification(data = {}) {
+  function createNotification(
+    data = {}
+  ) {
     state.notifications.unshift({
-      id: createId("notification"),
-      icon: data.icon || "🔔",
-      title: data.title || "إشعار",
-      text: data.text || "",
+      id: createId(
+        "notification"
+      ),
+
+      icon:
+        data.icon ||
+        "🔔",
+
+      title:
+        data.title ||
+        "إشعار",
+
+      text:
+        data.text ||
+        "",
+
       time: now(),
+
       read: false
     });
 
     state.notifications =
-      state.notifications.slice(0, 50);
+      state.notifications.slice(
+        0,
+        50
+      );
 
     updateNotifications();
+
     saveState();
   }
 
   function updateNotifications() {
     const unread =
       state.notifications.filter(
-        (item) => !item.read
+        (item) =>
+          !item.read
       ).length;
 
-    $$("[data-notification-count]").forEach(
+    $$(
+      "[data-notification-count]"
+    ).forEach(
       (element) => {
-        element.textContent = unread;
+        element.textContent =
+          unread;
+
         element.classList.toggle(
           "hidden",
           unread === 0
@@ -1252,15 +1930,17 @@
     );
 
     updateNotifications();
+
     saveState();
   }
 
-  /* =========================
+  /* =========================================================
      EMOJI
-  ========================= */
+     ========================================================= */
 
   function setupEmojiPanel() {
-    const panel = DOM.emojiPanel;
+    const panel =
+      DOM.emojiPanel;
 
     if (!panel) return;
 
@@ -1297,36 +1977,47 @@
       "👀"
     ];
 
-    panel.innerHTML = emojis
-      .map(
-        (emoji) => `
-          <button
-            type="button"
-            class="emoji-item"
-            data-emoji="${emoji}"
-          >
-            ${emoji}
-          </button>
-        `
-      )
-      .join("");
+    panel.innerHTML =
+      emojis
+        .map(
+          (emoji) => `
+            <button
+              type="button"
+              class="emoji-item"
+              data-emoji="${emoji}"
+            >
+              ${emoji}
+            </button>
+          `
+        )
+        .join("");
 
-    panel.addEventListener("click", (event) => {
-      const button =
-        event.target.closest("[data-emoji]");
+    panel.addEventListener(
+      "click",
+      (event) => {
+        const button =
+          event.target.closest(
+            "[data-emoji]"
+          );
 
-      if (!button) return;
+        if (!button) return;
 
-      insertEmoji(
-        button.dataset.emoji
-      );
-    });
+        insertEmoji(
+          button.dataset.emoji
+        );
+      }
+    );
   }
 
-  function insertEmoji(emoji) {
-    if (!DOM.messageInput) return;
+  function insertEmoji(
+    emoji
+  ) {
+    if (!DOM.messageInput) {
+      return;
+    }
 
-    const input = DOM.messageInput;
+    const input =
+      DOM.messageInput;
 
     const start =
       input.selectionStart ??
@@ -1337,14 +2028,20 @@
       input.value.length;
 
     input.value =
-      input.value.slice(0, start) +
+      input.value.slice(
+        0,
+        start
+      ) +
       emoji +
-      input.value.slice(end);
+      input.value.slice(
+        end
+      );
 
     input.focus();
 
     const position =
-      start + emoji.length;
+      start +
+      emoji.length;
 
     input.setSelectionRange(
       position,
@@ -1352,40 +2049,46 @@
     );
   }
 
-  /* =========================
+  /* =========================================================
      THEME
-  ========================= */
+     ========================================================= */
 
   function restoreTheme() {
     document.body.classList.toggle(
       "light",
-      state.settings.theme === "light"
+      state.settings.theme ===
+        "light"
     );
   }
 
   function toggleTheme() {
     state.settings.theme =
-      state.settings.theme === "dark"
+      state.settings.theme ===
+      "dark"
         ? "light"
         : "dark";
 
     restoreTheme();
+
     saveState();
 
     showToast(
-      state.settings.theme === "dark"
+      state.settings.theme ===
+        "dark"
         ? "تم تفعيل الوضع الداكن 🌙"
         : "تم تفعيل الوضع الفاتح ☀️",
       "info"
     );
   }
 
-  /* =========================
+  /* =========================================================
      SIDEBAR
-  ========================= */
+     ========================================================= */
 
   function toggleSidebar() {
-    if (!DOM.sidebar) return;
+    if (!DOM.sidebar) {
+      return;
+    }
 
     DOM.sidebar.classList.toggle(
       "open"
@@ -1393,25 +2096,53 @@
 
     document.body.classList.toggle(
       "sidebar-open",
-      DOM.sidebar.classList.contains("open")
+      DOM.sidebar.classList.contains(
+        "open"
+      )
     );
   }
 
-  /* =========================
-     MODALS
-  ========================= */
+  /* =========================================================
+     MODAL
+     ========================================================= */
 
-  function openModal(content) {
-    if (!DOM.modalRoot) return;
+  function openModal(
+    content
+  ) {
+    if (!DOM.modalRoot) {
+      /*
+        لو الـindex القديم لا يحتوي
+        modalRoot، ننشئ واحداً تلقائياً.
+      */
+
+      const root =
+        document.createElement(
+          "div"
+        );
+
+      root.id =
+        "modalRoot";
+
+      document.body.appendChild(
+        root
+      );
+
+      DOM.modalRoot = root;
+    }
 
     DOM.modalRoot.innerHTML = `
-      <div class="modal-backdrop" data-close-modal>
+      <div
+        class="modal-backdrop"
+        data-close-modal
+      >
+
         <div
           class="modal-card"
           role="dialog"
           aria-modal="true"
           onclick="event.stopPropagation()"
         >
+
           <button
             class="modal-close"
             type="button"
@@ -1422,11 +2153,15 @@
           </button>
 
           ${content}
+
         </div>
+
       </div>
     `;
 
-    DOM.modalRoot.classList.add("active");
+    DOM.modalRoot.classList.add(
+      "active"
+    );
 
     document.body.classList.add(
       "modal-open"
@@ -1434,7 +2169,9 @@
   }
 
   function closeModal() {
-    if (!DOM.modalRoot) return;
+    if (!DOM.modalRoot) {
+      return;
+    }
 
     DOM.modalRoot.classList.remove(
       "active"
@@ -1447,53 +2184,65 @@
     );
   }
 
-  function closeAllOverlays(includeModal = true) {
+  function closeAllOverlays(
+    includeModal = true
+  ) {
     if (includeModal) {
       closeModal();
     }
 
-    if (DOM.videoCallOverlay) {
+    if (
+      DOM.videoCallOverlay
+    ) {
       DOM.videoCallOverlay.classList.remove(
         "active"
       );
     }
 
-    if (DOM.gameCallOverlay) {
+    if (
+      DOM.gameCallOverlay
+    ) {
       DOM.gameCallOverlay.classList.remove(
         "active"
       );
     }
   }
 
-  /* =========================
+  /* =========================================================
      VIDEO CALL
-  ========================= */
+     ========================================================= */
 
-  function startVideoCall() {
-    if (!DOM.videoCallOverlay) {
-      openCallFallback("video");
-      return;
+  async function startVideoCall() {
+    if (
+      DOM.videoCallOverlay
+    ) {
+      DOM.videoCallOverlay.classList.add(
+        "active"
+      );
+
+      document.body.classList.add(
+        "call-active"
+      );
     }
-
-    DOM.videoCallOverlay.classList.add(
-      "active"
-    );
-
-    document.body.classList.add(
-      "call-active"
-    );
 
     showToast(
       "جاري تجهيز مكالمة الفيديو 📹",
       "info"
     );
 
-    /*
-      هذا هو المكان الذي سيتم فيه
-      تشغيل WebRTC الحقيقي مع server.js.
-    */
+    await requestCameraPermission();
 
-    requestCameraPermission();
+    window.dispatchEvent(
+      new CustomEvent(
+        "nexora:video-call-start",
+        {
+          detail: {
+            chat:
+              getCurrentChat()
+          }
+        }
+      )
+    );
   }
 
   async function requestCameraPermission() {
@@ -1501,15 +2250,22 @@
       !navigator.mediaDevices ||
       !navigator.mediaDevices.getUserMedia
     ) {
-      return;
+      showToast(
+        "المتصفح لا يدعم تشغيل الكاميرا هنا",
+        "warning"
+      );
+
+      return null;
     }
 
     try {
       const stream =
-        await navigator.mediaDevices.getUserMedia({
-          video: true,
-          audio: true
-        });
+        await navigator.mediaDevices.getUserMedia(
+          {
+            video: true,
+            audio: true
+          }
+        );
 
       const video =
         DOM.videoCallOverlay?.querySelector(
@@ -1517,13 +2273,21 @@
         );
 
       if (video) {
-        video.srcObject = stream;
+        video.srcObject =
+          stream;
+
         video.muted = true;
-        video.play().catch(() => {});
+
+        await video
+          .play()
+          .catch(() => {});
       }
+
+      return stream;
+
     } catch (error) {
       console.warn(
-        "Camera/microphone permission:",
+        "NEXORA camera permission:",
         error
       );
 
@@ -1531,54 +2295,83 @@
         "لم يتم السماح بالكاميرا أو الميكروفون",
         "warning"
       );
+
+      return null;
     }
   }
 
+  /* =========================================================
+     VOICE CALL
+     ========================================================= */
+
   function startVoiceCall() {
-    openCallFallback("voice");
+    openCallFallback(
+      "voice"
+    );
   }
 
-  function openCallFallback(type) {
+  function openCallFallback(
+    type
+  ) {
     openModal(`
       <div class="call-modal">
+
         <div class="call-icon">
-          ${type === "video" ? "📹" : "📞"}
+          ${
+            type === "video"
+              ? "📹"
+              : "📞"
+          }
         </div>
 
         <h2>
-          ${type === "video"
-            ? "مكالمة فيديو"
-            : "مكالمة صوتية"}
+          ${
+            type === "video"
+              ? "مكالمة فيديو"
+              : "مكالمة صوتية"
+          }
         </h2>
 
         <p>
-          سيتم ربط الاتصال الحقيقي من خلال
-          WebRTC في طبقة الاتصال الخاصة بالمنصة.
+          واجهة الاتصال جاهزة،
+          وسيتم توصيل الاتصال الحقيقي
+          من خلال طبقة WebRTC.
         </p>
 
         <button
           class="primary-btn"
           data-close-modal
+          type="button"
         >
           إغلاق
         </button>
+
       </div>
     `);
   }
 
   function endCall() {
-    if (DOM.videoCallOverlay) {
+    if (
+      DOM.videoCallOverlay
+    ) {
       const video =
         DOM.videoCallOverlay.querySelector(
           "video"
         );
 
-      if (video?.srcObject) {
+      if (
+        video &&
+        video.srcObject
+      ) {
         video.srcObject
           .getTracks()
-          .forEach((track) => track.stop());
+          .forEach(
+            (track) =>
+              track.stop()
+          );
 
-        video.srcObject = null;
+        video.srcObject =
+          null;
       }
 
       DOM.videoCallOverlay.classList.remove(
@@ -1586,7 +2379,9 @@
       );
     }
 
-    if (DOM.gameCallOverlay) {
+    if (
+      DOM.gameCallOverlay
+    ) {
       DOM.gameCallOverlay.classList.remove(
         "active"
       );
@@ -1600,14 +2395,24 @@
       "انتهت المكالمة",
       "info"
     );
+
+    window.dispatchEvent(
+      new CustomEvent(
+        "nexora:video-call-end"
+      )
+    );
   }
 
-  /* =========================
-     GAME + CALL
-  ========================= */
+  /* =========================================================
+     GAME + VIDEO
+     ========================================================= */
 
-  function startGameCall(game) {
-    if (DOM.gameCallOverlay) {
+  function startGameCall(
+    game
+  ) {
+    if (
+      DOM.gameCallOverlay
+    ) {
       DOM.gameCallOverlay.classList.add(
         "active"
       );
@@ -1627,28 +2432,49 @@
     );
   }
 
-  /* =========================
+  /* =========================================================
      TOAST
-  ========================= */
+     ========================================================= */
 
   function showToast(
     message,
     type = "info",
-    duration = CONFIG.toastDuration
+    duration =
+      CONFIG.toastDuration
   ) {
+    /*
+      لو الـindex لا يحتوي
+      toast container، ننشئه.
+    */
+
     if (!DOM.toastContainer) {
-      console.log(`[${type}]`, message);
-      return;
+      DOM.toastContainer =
+        document.createElement(
+          "div"
+        );
+
+      DOM.toastContainer.id =
+        "toastContainer";
+
+      DOM.toastContainer.className =
+        "toast-container";
+
+      document.body.appendChild(
+        DOM.toastContainer
+      );
     }
 
     const toast =
-      document.createElement("div");
+      document.createElement(
+        "div"
+      );
 
     toast.className =
       `nexora-toast toast-${type}`;
 
     toast.innerHTML = `
       <div class="toast-content">
+
         <span class="toast-message">
           ${escapeHTML(message)}
         </span>
@@ -1660,6 +2486,7 @@
         >
           ×
         </button>
+
       </div>
     `;
 
@@ -1667,36 +2494,56 @@
       toast
     );
 
-    requestAnimationFrame(() => {
-      toast.classList.add("show");
-    });
+    requestAnimationFrame(
+      () => {
+        toast.classList.add(
+          "show"
+        );
+      }
+    );
 
     const remove = () => {
-      toast.classList.remove("show");
+      toast.classList.remove(
+        "show"
+      );
 
       setTimeout(() => {
-        toast.remove();
+        if (toast.parentNode) {
+          toast.remove();
+        }
       }, 250);
     };
 
     toast
-      .querySelector(".toast-close")
+      .querySelector(
+        ".toast-close"
+      )
       ?.addEventListener(
         "click",
         remove
       );
 
-    setTimeout(remove, duration);
+    setTimeout(
+      remove,
+      duration
+    );
   }
 
-  /* =========================
+  /* =========================================================
      SOUND
-  ========================= */
+     ========================================================= */
 
-  let audioContext = null;
+  let audioContext =
+    null;
 
-  function playSound(type = "click") {
-    if (!state.settings.sound) return;
+  function playSound(
+    type = "click"
+  ) {
+    if (
+      !state.settings.sound
+    ) {
+      return;
+    }
 
     try {
       audioContext =
@@ -1713,6 +2560,7 @@
         audioContext.createGain();
 
       oscillator.connect(gain);
+
       gain.connect(
         audioContext.destination
       );
@@ -1726,9 +2574,11 @@
       };
 
       oscillator.frequency.value =
-        frequencies[type] || 520;
+        frequencies[type] ||
+        520;
 
-      oscillator.type = "sine";
+      oscillator.type =
+        "sine";
 
       gain.gain.setValueAtTime(
         0.0001,
@@ -1737,37 +2587,54 @@
 
       gain.gain.exponentialRampToValueAtTime(
         0.045,
-        audioContext.currentTime + 0.015
+        audioContext.currentTime +
+          0.015
       );
 
       gain.gain.exponentialRampToValueAtTime(
         0.0001,
-        audioContext.currentTime + 0.12
+        audioContext.currentTime +
+          0.12
       );
 
       oscillator.start();
+
       oscillator.stop(
-        audioContext.currentTime + 0.13
+        audioContext.currentTime +
+          0.13
       );
+
     } catch {
-      // Audio is optional.
+      /*
+        الصوت اختياري.
+      */
     }
   }
 
-  /* =========================
+  /* =========================================================
      KEYBOARD
-  ========================= */
+     ========================================================= */
 
   function bindKeyboardShortcuts() {
     document.addEventListener(
       "keydown",
       (event) => {
+        const active =
+          document.activeElement;
+
+        const typing =
+          active &&
+          (
+            active.tagName ===
+              "INPUT" ||
+            active.tagName ===
+              "TEXTAREA" ||
+            active.isContentEditable
+          );
+
         if (
           event.key === "/" &&
-          document.activeElement?.tagName !==
-            "INPUT" &&
-          document.activeElement?.tagName !==
-            "TEXTAREA"
+          !typing
         ) {
           event.preventDefault();
 
@@ -1776,22 +2643,29 @@
           return;
         }
 
-        if (event.key === "Escape") {
+        if (
+          event.key ===
+          "Escape"
+        ) {
           closeModal();
-          closeAllOverlays(false);
+
+          closeAllOverlays(
+            false
+          );
         }
       }
     );
   }
 
-  /* =========================
-     ONLINE STATUS
-  ========================= */
+  /* =========================================================
+     ONLINE / OFFLINE
+     ========================================================= */
 
   window.addEventListener(
     "online",
     () => {
-      state.user.online = true;
+      state.user.online =
+        true;
 
       showToast(
         "عاد الاتصال بالإنترنت ✓",
@@ -1805,7 +2679,8 @@
   window.addEventListener(
     "offline",
     () => {
-      state.user.online = false;
+      state.user.online =
+        false;
 
       showToast(
         "أنت الآن غير متصل بالإنترنت",
@@ -1816,9 +2691,9 @@
     }
   );
 
-  /* =========================
+  /* =========================================================
      PAGE EVENTS
-  ========================= */
+     ========================================================= */
 
   window.addEventListener(
     "nexora:navigate",
@@ -1826,29 +2701,41 @@
       const page =
         event.detail?.page;
 
-      if (page === "notifications") {
+      if (
+        page ===
+        "notifications"
+      ) {
         markNotificationsRead();
       }
 
-      if (page === "messages") {
+      if (
+        page ===
+        "messages"
+      ) {
         renderChatList();
         renderCurrentChat();
       }
 
-      if (page === "profile") {
+      if (
+        page ===
+        "profile"
+      ) {
         updateUserUI();
       }
     }
   );
 
-  /* =========================
+  /* =========================================================
      PUBLIC API
-  ========================= */
+     ========================================================= */
 
   window.Nexora = {
-    state,
+    get state() {
+      return state;
+    },
 
     navigate,
+
     showToast,
 
     openModal,
@@ -1857,10 +2744,12 @@
     openChat,
     createChat,
 
-    sendMessage: sendCurrentMessage,
+    sendMessage:
+      sendCurrentMessage,
 
     purchaseCoins,
     spendCoins,
+
     sendGift,
 
     openRoom,
@@ -1869,6 +2758,7 @@
     startVideoCall,
     startVoiceCall,
     startGameCall,
+
     endCall,
 
     toggleTheme,
@@ -1876,8 +2766,11 @@
     insertEmoji,
 
     refresh() {
+      cacheDOM();
+
       updateUserUI();
       updateNotifications();
+
       renderChatList();
       renderCurrentChat();
     },
@@ -1891,19 +2784,25 @@
     }
   };
 
-  /* =========================
-     DEBUG / DEV EVENTS
-  ========================= */
+  /* =========================================================
+     EXTERNAL EVENTS
+     ========================================================= */
 
   window.addEventListener(
     "nexora:add-coins",
     (event) => {
       const amount =
-        Number(event.detail?.amount) || 0;
+        Number(
+          event.detail?.amount
+        ) || 0;
 
-      if (amount <= 0) return;
+      if (amount <= 0) {
+        return;
+      }
 
-      purchaseCoins(amount);
+      purchaseCoins(
+        amount
+      );
     }
   );
 
@@ -1916,11 +2815,23 @@
     }
   );
 
-  /* =========================
-     READY
-  ========================= */
+  /* =========================================================
+     START
+     ========================================================= */
 
-  document.documentElement.dataset.nexora =
-    "ready";
+  if (
+    document.readyState ===
+    "loading"
+  ) {
+    document.addEventListener(
+      "DOMContentLoaded",
+      init,
+      {
+        once: true
+      }
+    );
+  } else {
+    init();
+  }
 
 })();
