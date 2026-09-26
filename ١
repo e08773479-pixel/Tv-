@@ -1,0 +1,2545 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  <meta name="theme-color" content="#070914">
+  <meta name="description" content="NEXORA — تواصل، فيديو، ألعاب، غرف، متجر وأكثر">
+
+  <title>NEXORA — تواصل • العب • اكتشف</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&family=Orbitron:wght@500;600;700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<!-- =========================================================
+     APP LOADER
+========================================================= -->
+
+<div id="appLoader" class="app-loader">
+
+  <div class="loader-orbit">
+    <div class="loader-core">
+      NX
+    </div>
+
+    <span class="orbit-dot dot-1"></span>
+    <span class="orbit-dot dot-2"></span>
+    <span class="orbit-dot dot-3"></span>
+  </div>
+
+  <div class="loader-brand">NEXORA</div>
+  <div class="loader-text">جاري تجهيز عالمك...</div>
+
+  <div class="loader-progress">
+    <span id="loaderProgress"></span>
+  </div>
+
+  <div class="loader-percent" id="loaderPercent">0%</div>
+
+</div>
+
+
+<!-- =========================================================
+     BACKGROUND
+========================================================= -->
+
+<div class="ambient-background">
+
+  <div class="ambient-orb orb-a"></div>
+  <div class="ambient-orb orb-b"></div>
+  <div class="ambient-orb orb-c"></div>
+
+  <div class="grid-overlay"></div>
+  <div class="noise-overlay"></div>
+
+</div>
+
+
+<!-- =========================================================
+     APP
+========================================================= -->
+
+<div id="app" class="app hidden">
+
+
+  <!-- =======================================================
+       TOP HEADER
+  ======================================================== -->
+
+  <header class="top-header">
+
+    <div class="brand-area">
+
+      <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="القائمة">
+        ☰
+      </button>
+
+      <div class="brand-logo">
+        <span class="brand-symbol">N</span>
+        <span class="brand-name">NEXORA</span>
+      </div>
+
+    </div>
+
+
+    <div class="global-search">
+
+      <span class="search-icon">⌕</span>
+
+      <input
+        id="globalSearch"
+        type="search"
+        placeholder="ابحث عن أشخاص، فيديوهات، ألعاب..."
+        autocomplete="off"
+      >
+
+      <kbd>⌘ K</kbd>
+
+    </div>
+
+
+    <div class="header-actions">
+
+      <button class="header-action" data-page="notifications" title="الإشعارات">
+        <span>🔔</span>
+        <i class="notification-dot"></i>
+      </button>
+
+      <button class="header-action" data-page="messages" title="الرسائل">
+        <span>💬</span>
+        <i class="notification-dot blue"></i>
+      </button>
+
+      <button class="header-action coin-action" data-page="wallet" title="المحفظة">
+        <span class="coin-icon">◈</span>
+        <strong id="headerCoins">2,450</strong>
+      </button>
+
+      <button class="mini-profile" data-page="profile">
+
+        <div class="avatar avatar-small">
+          <span>Y</span>
+          <div class="online-status"></div>
+        </div>
+
+        <div class="mini-profile-info">
+          <strong>يوسف</strong>
+          <small>Lv. 12</small>
+        </div>
+
+      </button>
+
+    </div>
+
+  </header>
+
+
+  <!-- =======================================================
+       DESKTOP SIDEBAR
+  ======================================================== -->
+
+  <aside class="sidebar" id="sidebar">
+
+    <div class="sidebar-user">
+
+      <div class="avatar avatar-large">
+        <span>Y</span>
+        <div class="online-status"></div>
+      </div>
+
+      <div>
+        <strong>يوسف</strong>
+        <span>@youssef</span>
+      </div>
+
+      <button class="sidebar-user-more">•••</button>
+
+    </div>
+
+
+    <nav class="main-navigation">
+
+      <div class="nav-label">الرئيسية</div>
+
+      <button class="nav-item active" data-page="home">
+        <span class="nav-icon">⌂</span>
+        <span>الرئيسية</span>
+      </button>
+
+      <button class="nav-item" data-page="discover">
+        <span class="nav-icon">✦</span>
+        <span>اكتشف</span>
+      </button>
+
+      <button class="nav-item" data-page="shorts">
+        <span class="nav-icon">▶</span>
+        <span>الفيديو</span>
+        <em>جديد</em>
+      </button>
+
+      <button class="nav-item" data-page="live">
+        <span class="nav-icon">◉</span>
+        <span>مباشر</span>
+      </button>
+
+
+      <div class="nav-label">تواصل</div>
+
+      <button class="nav-item" data-page="friends">
+        <span class="nav-icon">♧</span>
+        <span>الأصدقاء</span>
+      </button>
+
+      <button class="nav-item" data-page="messages">
+        <span class="nav-icon">◌</span>
+        <span>الرسائل</span>
+        <b class="nav-count">4</b>
+      </button>
+
+      <button class="nav-item" data-page="rooms">
+        <span class="nav-icon">◉</span>
+        <span>الغرف</span>
+      </button>
+
+
+      <div class="nav-label">الترفيه</div>
+
+      <button class="nav-item" data-page="games">
+        <span class="nav-icon">♜</span>
+        <span>الألعاب</span>
+      </button>
+
+      <button class="nav-item" data-page="tournaments">
+        <span class="nav-icon">🏆</span>
+        <span>البطولات</span>
+      </button>
+
+
+      <div class="nav-label">المزيد</div>
+
+      <button class="nav-item" data-page="store">
+        <span class="nav-icon">◇</span>
+        <span>المتجر</span>
+      </button>
+
+      <button class="nav-item" data-page="wallet">
+        <span class="nav-icon">◈</span>
+        <span>المحفظة</span>
+      </button>
+
+      <button class="nav-item" data-page="subscriptions">
+        <span class="nav-icon">◆</span>
+        <span>Premium</span>
+      </button>
+
+      <button class="nav-item" data-page="profile">
+        <span class="nav-icon">◎</span>
+        <span>ملفي</span>
+      </button>
+
+    </nav>
+
+
+    <div class="sidebar-bottom">
+
+      <div class="premium-mini-card">
+
+        <div class="premium-glow"></div>
+
+        <span class="premium-icon">◆</span>
+
+        <strong>ارتقِ بتجربتك</strong>
+
+        <small>
+          مزايا حصرية وهدايا أكثر
+        </small>
+
+        <button data-page="subscriptions">
+          اكتشف Premium
+        </button>
+
+      </div>
+
+
+      <button class="nav-item settings-item" data-page="settings">
+        <span class="nav-icon">⚙</span>
+        <span>الإعدادات</span>
+      </button>
+
+    </div>
+
+  </aside>
+
+
+  <!-- =======================================================
+       MAIN CONTENT
+  ======================================================== -->
+
+  <main class="main-content" id="mainContent">
+
+
+    <!-- =====================================================
+         HOME PAGE
+    ====================================================== -->
+
+    <section class="page active-page" id="page-home">
+
+      <div class="page-heading">
+
+        <div>
+          <span class="eyebrow">NEXORA WORLD</span>
+          <h1>أهلاً يا يوسف 👋</h1>
+          <p>كل عالمك الاجتماعي والترفيهي في مكان واحد.</p>
+        </div>
+
+        <div class="heading-actions">
+
+          <button class="glass-btn" data-page="live">
+            <span>●</span>
+            ابدأ بث
+          </button>
+
+          <button class="primary-btn" data-action="create-post">
+            ＋ منشور
+          </button>
+
+        </div>
+
+      </div>
+
+
+      <!-- STORIES -->
+
+      <div class="section-block">
+
+        <div class="section-title-row">
+
+          <div>
+            <h2>القصص</h2>
+            <span>ماذا يحدث الآن؟</span>
+          </div>
+
+          <button class="text-btn">عرض الكل ←</button>
+
+        </div>
+
+
+        <div class="stories-row">
+
+          <div class="story-card create-story">
+
+            <div class="story-create-avatar">
+              +
+            </div>
+
+            <strong>قصتك</strong>
+            <span>أضف قصة</span>
+
+          </div>
+
+
+          <div class="story-card story-one">
+            <div class="story-avatar">A</div>
+            <span class="story-live">LIVE</span>
+            <strong>Ahmed</strong>
+          </div>
+
+
+          <div class="story-card story-two">
+            <div class="story-avatar">M</div>
+            <strong>Mariam</strong>
+          </div>
+
+
+          <div class="story-card story-three">
+            <div class="story-avatar">S</div>
+            <strong>Salma</strong>
+          </div>
+
+
+          <div class="story-card story-four">
+            <div class="story-avatar">K</div>
+            <strong>Kareem</strong>
+          </div>
+
+
+          <div class="story-card story-five">
+            <div class="story-avatar">N</div>
+            <strong>Nour</strong>
+          </div>
+
+
+          <div class="story-card story-six">
+            <div class="story-avatar">O</div>
+            <strong>Omar</strong>
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- QUICK SERVICES -->
+
+      <div class="quick-services">
+
+        <button class="service-card game-service" data-page="games">
+          <span class="service-icon">♜</span>
+          <div>
+            <strong>العب الآن</strong>
+            <small>مع أصدقائك</small>
+          </div>
+          <span class="service-arrow">←</span>
+        </button>
+
+        <button class="service-card video-service" data-page="shorts">
+          <span class="service-icon">▶</span>
+          <div>
+            <strong>شاهد فيديو</strong>
+            <small>اكتشف الجديد</small>
+          </div>
+          <span class="service-arrow">←</span>
+        </button>
+
+        <button class="service-card call-service" data-page="friends">
+          <span class="service-icon">⌁</span>
+          <div>
+            <strong>تواصل</strong>
+            <small>مكالمات حقيقية</small>
+          </div>
+          <span class="service-arrow">←</span>
+        </button>
+
+        <button class="service-card store-service" data-page="store">
+          <span class="service-icon">◇</span>
+          <div>
+            <strong>المتجر</strong>
+            <small>عناصر وهدايا</small>
+          </div>
+          <span class="service-arrow">←</span>
+        </button>
+
+      </div>
+
+
+      <!-- FEED -->
+
+      <div class="content-layout">
+
+        <div class="feed-column">
+
+          <div class="feed-filter">
+
+            <button class="feed-tab active">لك</button>
+            <button class="feed-tab">متابَعون</button>
+            <button class="feed-tab">الأحدث</button>
+            <button class="feed-tab">الأكثر تفاعلاً</button>
+
+          </div>
+
+
+          <!-- POST 1 -->
+
+          <article class="post-card">
+
+            <header class="post-header">
+
+              <div class="user-info">
+
+                <div class="avatar avatar-medium gradient-avatar">
+                  A
+                  <div class="online-status"></div>
+                </div>
+
+                <div>
+                  <strong>Ahmed Hassan <span class="verified">✓</span></strong>
+                  <span>@ahmed • منذ 12 دقيقة</span>
+                </div>
+
+              </div>
+
+              <button class="post-more">•••</button>
+
+            </header>
+
+
+            <div class="post-text">
+              <p>
+                أجمل حاجة في NEXORA إنك تقدر تبدأ لعبة،
+                وفي نفس الوقت تفتح مكالمة فيديو مع أصحابك 🎮📹
+              </p>
+
+              <div class="hashtag-row">
+                <span>#NEXORA</span>
+                <span>#Gaming</span>
+                <span>#Friends</span>
+              </div>
+            </div>
+
+
+            <div class="post-media gaming-media">
+
+              <div class="media-glow"></div>
+
+              <div class="gaming-preview">
+
+                <span class="game-preview-icon">♟</span>
+
+                <strong>DOMINO ROOM</strong>
+
+                <small>
+                  4 لاعبين • 18:42
+                </small>
+
+                <button data-page="games">
+                  انضم للعبة
+                </button>
+
+              </div>
+
+            </div>
+
+
+            <div class="post-stats">
+
+              <span>♡ 1.8K إعجاب</span>
+              <span>💬 184 تعليق</span>
+              <span>↗ 73 مشاركة</span>
+
+            </div>
+
+
+            <div class="post-actions">
+
+              <button data-action="like" class="like-action">
+                ♡ <span>إعجاب</span>
+              </button>
+
+              <button data-action="comment">
+                ◌ <span>تعليق</span>
+              </button>
+
+              <button data-action="share">
+                ↗ <span>مشاركة</span>
+              </button>
+
+              <button data-action="save">
+                ♧ <span>حفظ</span>
+              </button>
+
+            </div>
+
+          </article>
+
+
+          <!-- POST 2 -->
+
+          <article class="post-card">
+
+            <header class="post-header">
+
+              <div class="user-info">
+
+                <div class="avatar avatar-medium avatar-purple">
+                  M
+                  <div class="online-status"></div>
+                </div>
+
+                <div>
+                  <strong>Mariam Ali</strong>
+                  <span>@mariam • منذ 37 دقيقة</span>
+                </div>
+
+              </div>
+
+              <button class="post-more">•••</button>
+
+            </header>
+
+
+            <div class="post-text">
+
+              <p>
+                حد داخل روم شطرنج؟ 🧠♟️
+                عايزة أجرب ألعب مباراة سريعة.
+              </p>
+
+            </div>
+
+
+            <div class="post-game-banner chess-banner">
+
+              <div class="chess-board-mini">
+
+                <span>♜</span>
+                <span>♞</span>
+                <span>♝</span>
+                <span>♛</span>
+                <span>♚</span>
+                <span>♝</span>
+                <span>♞</span>
+                <span>♜</span>
+
+              </div>
+
+              <div class="game-banner-info">
+                <span>LIVE GAME</span>
+                <strong>شطرنج</strong>
+                <small>12 لاعباً يشاهدون الآن</small>
+
+                <button data-page="games">
+                  شاهد اللعبة
+                </button>
+              </div>
+
+            </div>
+
+
+            <div class="post-stats">
+
+              <span>♡ 624 إعجاب</span>
+              <span>💬 91 تعليق</span>
+
+            </div>
+
+
+            <div class="post-actions">
+
+              <button data-action="like" class="like-action">
+                ♡ <span>إعجاب</span>
+              </button>
+
+              <button data-action="comment">
+                ◌ <span>تعليق</span>
+              </button>
+
+              <button data-action="share">
+                ↗ <span>مشاركة</span>
+              </button>
+
+              <button data-action="save">
+                ♧ <span>حفظ</span>
+              </button>
+
+            </div>
+
+          </article>
+
+        </div>
+
+
+        <!-- RIGHT WIDGETS -->
+
+        <aside class="home-widgets">
+
+
+          <!-- ONLINE FRIENDS -->
+
+          <div class="widget-card">
+
+            <div class="widget-title">
+
+              <div>
+                <strong>متصل الآن</strong>
+                <span>24 صديقاً</span>
+              </div>
+
+              <button data-page="friends">الكل</button>
+
+            </div>
+
+
+            <div class="online-friends">
+
+              <div class="friend-mini">
+                <div class="avatar avatar-small gradient-avatar">A<i></i></div>
+                <span>Ahmed</span>
+              </div>
+
+              <div class="friend-mini">
+                <div class="avatar avatar-small avatar-purple">M<i></i></div>
+                <span>Mariam</span>
+              </div>
+
+              <div class="friend-mini">
+                <div class="avatar avatar-small avatar-blue">S<i></i></div>
+                <span>Salma</span>
+              </div>
+
+              <div class="friend-mini">
+                <div class="avatar avatar-small avatar-orange">K<i></i></div>
+                <span>Kareem</span>
+              </div>
+
+              <div class="friend-mini">
+                <div class="avatar avatar-small avatar-pink">N<i></i></div>
+                <span>Nour</span>
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <!-- LIVE -->
+
+          <div class="widget-card live-widget">
+
+            <div class="widget-title">
+
+              <div>
+                <strong>🔴 مباشر الآن</strong>
+                <span>لا تفوّت اللحظة</span>
+              </div>
+
+              <button data-page="live">المزيد</button>
+
+            </div>
+
+
+            <div class="live-preview">
+
+              <div class="live-image">
+
+                <div class="live-viewers">
+                  ● 1.2K
+                </div>
+
+                <div class="live-host">
+                  <div class="avatar avatar-small">R</div>
+                  <strong>Rana</strong>
+                </div>
+
+                <div class="live-topic">
+                  دردشة + ألعاب 🎮
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <!-- TRENDING -->
+
+          <div class="widget-card">
+
+            <div class="widget-title">
+              <div>
+                <strong>المتداول</strong>
+                <span>الأكثر انتشاراً</span>
+              </div>
+            </div>
+
+
+            <div class="trend-list">
+
+              <div class="trend-item">
+                <small>01 • Gaming</small>
+                <strong>#DominoNight</strong>
+                <span>18.4K منشور</span>
+              </div>
+
+              <div class="trend-item">
+                <small>02 • NEXORA</small>
+                <strong>#NEXORA</strong>
+                <span>12.8K منشور</span>
+              </div>
+
+              <div class="trend-item">
+                <small>03 • Music</small>
+                <strong>#NewSound</strong>
+                <span>8.9K منشور</span>
+              </div>
+
+            </div>
+
+          </div>
+
+
+        </aside>
+
+      </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         DISCOVER
+    ====================================================== -->
+
+    <section class="page" id="page-discover">
+
+      <div class="page-heading">
+        <div>
+          <span class="eyebrow">EXPLORE</span>
+          <h1>اكتشف</h1>
+          <p>ناس، محتوى، ألعاب وغرف تستحق التجربة.</p>
+        </div>
+      </div>
+
+
+      <div class="discover-tabs">
+
+        <button class="active">الكل</button>
+        <button>أشخاص</button>
+        <button>فيديو</button>
+        <button>ألعاب</button>
+        <button>غرف</button>
+        <button>ترند</button>
+
+      </div>
+
+
+      <div class="discover-grid">
+
+        <div class="discover-large-card">
+          <span>LIVE</span>
+          <h2>ليلة الألعاب 🎮</h2>
+          <p>انضم لأكثر الغرف نشاطاً الآن.</p>
+          <button data-page="live">دخول الغرفة ←</button>
+        </div>
+
+        <div class="discover-card discover-card-purple">
+          <span>VIDEO</span>
+          <h3>فيديوهات جديدة</h3>
+          <button data-page="shorts">شاهد الآن</button>
+        </div>
+
+        <div class="discover-card discover-card-blue">
+          <span>GAMES</span>
+          <h3>تحديات اليوم</h3>
+          <button data-page="games">العب</button>
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         SHORTS / VIDEOS
+    ====================================================== -->
+
+    <section class="page" id="page-shorts">
+
+      <div class="page-heading">
+
+        <div>
+          <span class="eyebrow">NEXORA VIDEO</span>
+          <h1>الفيديو</h1>
+          <p>فيديوهات قصيرة ومحتوى من مجتمع NEXORA.</p>
+        </div>
+
+        <button class="primary-btn" data-action="upload-video">
+          ＋ رفع فيديو
+        </button>
+
+      </div>
+
+
+      <div class="video-grid">
+
+        <article class="video-card">
+          <div class="video-thumbnail thumb-one">
+            <span class="video-duration">00:28</span>
+            <button class="play-circle">▶</button>
+          </div>
+          <div class="video-info">
+            <div class="avatar avatar-small">A</div>
+            <div>
+              <strong>تحدي الدومينو 😈</strong>
+              <span>Ahmed • 28K مشاهدة</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="video-card">
+          <div class="video-thumbnail thumb-two">
+            <span class="video-duration">00:41</span>
+            <button class="play-circle">▶</button>
+          </div>
+          <div class="video-info">
+            <div class="avatar avatar-small avatar-purple">M</div>
+            <div>
+              <strong>جولة شطرنج سريعة ♟️</strong>
+              <span>Mariam • 17K مشاهدة</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="video-card">
+          <div class="video-thumbnail thumb-three">
+            <span class="video-duration">00:19</span>
+            <button class="play-circle">▶</button>
+          </div>
+          <div class="video-info">
+            <div class="avatar avatar-small avatar-blue">K</div>
+            <div>
+              <strong>مين يكسب؟ 🎮</strong>
+              <span>Kareem • 11K مشاهدة</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="video-card">
+          <div class="video-thumbnail thumb-four">
+            <span class="video-duration">00:35</span>
+            <button class="play-circle">▶</button>
+          </div>
+          <div class="video-info">
+            <div class="avatar avatar-small avatar-orange">S</div>
+            <div>
+              <strong>أفضل لحظة في الروم</strong>
+              <span>Salma • 9K مشاهدة</span>
+            </div>
+          </div>
+        </article>
+
+      </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         LIVE
+    ====================================================== -->
+
+    <section class="page" id="page-live">
+
+      <div class="page-heading">
+
+        <div>
+          <span class="eyebrow">LIVE WORLD</span>
+          <h1>البث المباشر</h1>
+          <p>تحدث، العب، وشاهد أشخاصاً حقيقيين.</p>
+        </div>
+
+        <button class="primary-btn" data-action="start-live">
+          🔴 ابدأ بث مباشر
+        </button>
+
+      </div>
+
+
+      <div class="live-grid">
+
+        <article class="live-room-card featured-live">
+
+          <div class="room-visual">
+            <span class="live-badge">● LIVE</span>
+            <span class="viewer-badge">1.2K مشاهدة</span>
+
+            <div class="room-center-icon">🎮</div>
+
+            <div class="room-host">
+              <div class="avatar avatar-medium">R</div>
+              <div>
+                <strong>Rana Gaming</strong>
+                <span>ألعاب + دردشة</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="room-info">
+            <h3>سهرة ألعاب مع المتابعين 🎮</h3>
+            <p>لعب • ضحك • تحديات • هدايا</p>
+            <button data-action="join-live">انضم الآن</button>
+          </div>
+
+        </article>
+
+
+        <article class="live-room-card">
+          <div class="room-visual room-purple">
+            <span class="live-badge">● LIVE</span>
+            <span class="viewer-badge">842 مشاهدة</span>
+            <div class="room-center-icon">🎵</div>
+          </div>
+
+          <div class="room-info">
+            <h3>Music Room</h3>
+            <p>موسيقى ودردشة</p>
+            <button data-action="join-live">دخول</button>
+          </div>
+        </article>
+
+
+        <article class="live-room-card">
+          <div class="room-visual room-blue">
+            <span class="live-badge">● LIVE</span>
+            <span class="viewer-badge">513 مشاهدة</span>
+            <div class="room-center-icon">♟</div>
+          </div>
+
+          <div class="room-info">
+            <h3>Chess Battle</h3>
+            <p>بطولة شطرنج مباشرة</p>
+            <button data-action="join-live">دخول</button>
+          </div>
+        </article>
+
+      </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         FRIENDS
+    ====================================================== -->
+
+    <section class="page" id="page-friends">
+
+      <div class="page-heading">
+
+        <div>
+          <span class="eyebrow">COMMUNITY</span>
+          <h1>الأصدقاء</h1>
+          <p>اعثر على أصدقائك وتواصل معهم.</p>
+        </div>
+
+        <button class="primary-btn" data-action="find-friends">
+          ＋ إضافة أصدقاء
+        </button>
+
+      </div>
+
+
+      <div class="friends-tabs">
+        <button class="active">كل الأصدقاء</button>
+        <button>متصل الآن</button>
+        <button>طلبات</button>
+        <button>اقتراحات</button>
+      </div>
+
+
+      <div class="friends-grid">
+
+        <article class="friend-card">
+
+          <div class="friend-cover cover-one"></div>
+
+          <div class="friend-card-body">
+
+            <div class="friend-avatar-wrap">
+              <div class="avatar avatar-xl gradient-avatar">A</div>
+              <i></i>
+            </div>
+
+            <strong>Ahmed Hassan</strong>
+            <span>@ahmed</span>
+
+            <div class="friend-actions">
+              <button data-action="video-call">📹</button>
+              <button data-action="message">💬</button>
+              <button data-action="profile">عرض الملف</button>
+            </div>
+
+          </div>
+
+        </article>
+
+
+        <article class="friend-card">
+
+          <div class="friend-cover cover-two"></div>
+
+          <div class="friend-card-body">
+
+            <div class="friend-avatar-wrap">
+              <div class="avatar avatar-xl avatar-purple">M</div>
+              <i></i>
+            </div>
+
+            <strong>Mariam Ali</strong>
+            <span>@mariam</span>
+
+            <div class="friend-actions">
+              <button data-action="video-call">📹</button>
+              <button data-action="message">💬</button>
+              <button data-action="profile">عرض الملف</button>
+            </div>
+
+          </div>
+
+        </article>
+
+
+        <article class="friend-card">
+
+          <div class="friend-cover cover-three"></div>
+
+          <div class="friend-card-body">
+
+            <div class="friend-avatar-wrap">
+              <div class="avatar avatar-xl avatar-blue">K</div>
+            </div>
+
+            <strong>Kareem</strong>
+            <span>@kareem</span>
+
+            <div class="friend-actions">
+              <button data-action="video-call">📹</button>
+              <button data-action="message">💬</button>
+              <button data-action="profile">عرض الملف</button>
+            </div>
+
+          </div>
+
+        </article>
+
+      </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         MESSAGES
+    ====================================================== -->
+
+    <section class="page full-height-page" id="page-messages">
+
+      <div class="messages-layout">
+
+
+        <aside class="conversations-panel">
+
+          <div class="messages-header">
+
+            <div>
+              <span class="eyebrow">MESSAGES</span>
+              <h2>المحادثات</h2>
+            </div>
+
+            <button data-action="new-chat">＋</button>
+
+          </div>
+
+
+          <div class="chat-search">
+            🔍
+            <input type="text" placeholder="ابحث في المحادثات">
+          </div>
+
+
+          <div class="conversation-list">
+
+            <button class="conversation active">
+
+              <div class="avatar avatar-medium gradient-avatar">
+                A
+                <i></i>
+              </div>
+
+              <div class="conversation-info">
+                <strong>Ahmed</strong>
+                <span>يلا ندخل دومينو 🎮</span>
+              </div>
+
+              <div class="conversation-meta">
+                <time>20:18</time>
+                <b>2</b>
+              </div>
+
+            </button>
+
+
+            <button class="conversation">
+
+              <div class="avatar avatar-medium avatar-purple">
+                M
+                <i></i>
+              </div>
+
+              <div class="conversation-info">
+                <strong>Mariam</strong>
+                <span>الفيديو جامد 😂</span>
+              </div>
+
+              <div class="conversation-meta">
+                <time>19:54</time>
+              </div>
+
+            </button>
+
+
+            <button class="conversation">
+
+              <div class="avatar avatar-medium avatar-blue">
+                K
+              </div>
+
+              <div class="conversation-info">
+                <strong>Kareem</strong>
+                <span>تعالى الروم</span>
+              </div>
+
+              <div class="conversation-meta">
+                <time>18:43</time>
+              </div>
+
+            </button>
+
+          </div>
+
+        </aside>
+
+
+        <div class="chat-panel">
+
+          <header class="chat-header">
+
+            <div class="chat-user">
+
+              <div class="avatar avatar-medium gradient-avatar">
+                A
+                <i></i>
+              </div>
+
+              <div>
+                <strong>Ahmed Hassan</strong>
+                <span>متصل الآن</span>
+              </div>
+
+            </div>
+
+
+            <div class="chat-header-actions">
+
+              <button data-action="voice-call">☎</button>
+              <button data-action="video-call">📹</button>
+              <button data-action="chat-info">ⓘ</button>
+
+            </div>
+
+          </header>
+
+
+          <div class="chat-messages" id="chatMessages">
+
+            <div class="chat-date">
+              اليوم
+            </div>
+
+
+            <div class="message-row received">
+
+              <div class="avatar avatar-tiny gradient-avatar">A</div>
+
+              <div>
+                <div class="message-bubble">
+                  إزيك يا يوسف 👋
+                </div>
+
+                <small>20:14</small>
+              </div>
+
+            </div>
+
+
+            <div class="message-row received">
+
+              <div class="avatar avatar-tiny gradient-avatar">A</div>
+
+              <div>
+                <div class="message-bubble">
+                  يلا نلعب دومينو؟ 🎮
+                </div>
+
+                <small>20:15</small>
+              </div>
+
+            </div>
+
+
+            <div class="message-row sent">
+
+              <div>
+                <div class="message-bubble">
+                  يلا بينا 😂🔥
+                </div>
+
+                <small>20:16 ✓✓</small>
+              </div>
+
+            </div>
+
+
+            <div class="message-row sent">
+
+              <div>
+                <div class="message-bubble">
+                  هفتح فيديو كول وإحنا بنلعب 😎📹
+                </div>
+
+                <small>20:17 ✓✓</small>
+              </div>
+
+            </div>
+
+
+            <div class="typing-indicator" id="typingIndicator">
+              <span></span>
+              <span></span>
+              <span></span>
+              Ahmed يكتب...
+            </div>
+
+          </div>
+
+
+          <div class="chat-composer">
+
+            <button data-action="emoji">☺</button>
+
+            <button data-action="attachment">＋</button>
+
+            <input
+              id="messageInput"
+              type="text"
+              placeholder="اكتب رسالة..."
+              autocomplete="off"
+            >
+
+            <button class="voice-message" data-action="voice-message">
+              🎙
+            </button>
+
+            <button class="send-message" id="sendMessage">
+              ➤
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         ROOMS
+    ====================================================== -->
+
+    <section class="page" id="page-rooms">
+
+      <div class="page-heading">
+
+        <div>
+          <span class="eyebrow">SOCIAL ROOMS</span>
+          <h1>الغرف</h1>
+          <p>ادخل غرفة وتكلم والعب مع أشخاص حقيقيين.</p>
+        </div>
+
+        <button class="primary-btn" data-action="create-room">
+          ＋ إنشاء غرفة
+        </button>
+
+      </div>
+
+
+      <div class="rooms-toolbar">
+        <button class="active">كل الغرف</button>
+        <button>ألعاب</button>
+        <button>دردشة</button>
+        <button>موسيقى</button>
+        <button>مباشر</button>
+      </div>
+
+
+      <div class="rooms-grid">
+
+        <article class="room-card room-red">
+
+          <div class="room-card-top">
+            <span class="live-badge">● LIVE</span>
+            <span>👥 238</span>
+          </div>
+
+          <div class="room-icon">🎮</div>
+
+          <h3>Gaming Night</h3>
+          <p>ألعاب وتحديات مع المجتمع</p>
+
+          <div class="room-members">
+            <div class="avatar avatar-tiny">A</div>
+            <div class="avatar avatar-tiny avatar-purple">M</div>
+            <div class="avatar avatar-tiny avatar-blue">K</div>
+            <span>+235</span>
+          </div>
+
+          <button data-action="join-room">دخول الغرفة</button>
+
+        </article>
+
+
+        <article class="room-card room-purple">
+
+          <div class="room-card-top">
+            <span class="live-badge">● LIVE</span>
+            <span>👥 94</span>
+          </div>
+
+          <div class="room-icon">🎵</div>
+
+          <h3>Music Lounge</h3>
+          <p>اسمع واتكلم واكتشف موسيقى</p>
+
+          <div class="room-members">
+            <div class="avatar avatar-tiny avatar-orange">S</div>
+            <div class="avatar avatar-tiny avatar-pink">N</div>
+            <span>+92</span>
+          </div>
+
+          <button data-action="join-room">دخول الغرفة</button>
+
+        </article>
+
+
+        <article class="room-card room-blue">
+
+          <div class="room-card-top">
+            <span class="room-status">نشطة</span>
+            <span>👥 41</span>
+          </div>
+
+          <div class="room-icon">💬</div>
+
+          <h3>Late Night Talk</h3>
+          <p>دردشة مفتوحة</p>
+
+          <div class="room-members">
+            <div class="avatar avatar-tiny avatar-blue">O</div>
+            <div class="avatar avatar-tiny">Y</div>
+            <span>+39</span>
+          </div>
+
+          <button data-action="join-room">دخول الغرفة</button>
+
+        </article>
+
+      </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         GAMES
+    ====================================================== -->
+
+    <section class="page" id="page-games">
+
+      <div class="page-heading">
+
+        <div>
+          <span class="eyebrow">NEXORA ARCADE</span>
+          <h1>الألعاب</h1>
+          <p>العب مع أصدقائك أو لاعبين حقيقيين.</p>
+        </div>
+
+        <div class="game-balance">
+          <span>رصيد اللعب</span>
+          <strong>◈ 2,450</strong>
+        </div>
+
+      </div>
+
+
+      <div class="game-feature">
+
+        <div class="game-feature-content">
+
+          <span class="eyebrow">FEATURED</span>
+
+          <h2>DOMINO<br><b>CAFE</b></h2>
+
+          <p>
+            ادخل طاولة حقيقية، العب ضد لاعبين،
+            وافتح مكالمة فيديو أثناء المباراة.
+          </p>
+
+          <div class="feature-buttons">
+            <button class="primary-btn" data-action="play-domino">
+              🎮 العب الآن
+            </button>
+
+            <button class="glass-btn" data-action="find-game">
+              ابحث عن لاعب
+            </button>
+          </div>
+
+        </div>
+
+
+        <div class="domino-table-preview">
+
+          <div class="table-glow"></div>
+
+          <div class="domino-piece piece-a">
+            <i></i><i></i>
+          </div>
+
+          <div class="domino-piece piece-b">
+            <i></i><i></i><i></i>
+          </div>
+
+          <div class="domino-piece piece-c">
+            <i></i><i></i><i></i><i></i>
+          </div>
+
+          <div class="domino-piece piece-d">
+            <i></i><i></i>
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <div class="games-title-row">
+
+        <div>
+          <h2>كل الألعاب</h2>
+          <span>اختر لعبتك</span>
+        </div>
+
+      </div>
+
+
+      <div class="games-grid">
+
+        <article class="game-card game-domino">
+
+          <div class="game-art">
+            <span class="game-hot">🔥 HOT</span>
+            <div class="game-big-icon">▣</div>
+          </div>
+
+          <div class="game-card-info">
+            <h3>Domino</h3>
+            <p>2 - 4 لاعبين</p>
+
+            <div class="game-card-footer">
+              <span>👥 8.4K يلعبون</span>
+              <button data-action="play-domino">العب</button>
+            </div>
+          </div>
+
+        </article>
+
+
+        <article class="game-card game-ludo">
+
+          <div class="game-art">
+            <div class="game-big-icon">◉</div>
+          </div>
+
+          <div class="game-card-info">
+            <h3>Ludo</h3>
+            <p>2 - 4 لاعبين</p>
+
+            <div class="game-card-footer">
+              <span>👥 6.7K يلعبون</span>
+              <button data-action="play-ludo">العب</button>
+            </div>
+          </div>
+
+        </article>
+
+
+        <article class="game-card game-chess">
+
+          <div class="game-art">
+            <div class="game-big-icon">♛</div>
+          </div>
+
+          <div class="game-card-info">
+            <h3>Chess</h3>
+            <p>لاعبان</p>
+
+            <div class="game-card-footer">
+              <span>👥 3.2K يلعبون</span>
+              <button data-action="play-chess">العب</button>
+            </div>
+          </div>
+
+        </article>
+
+
+        <article class="game-card game-pool">
+
+          <div class="game-art">
+            <div class="game-big-icon">●</div>
+          </div>
+
+          <div class="game-card-info">
+            <h3>8 Ball</h3>
+            <p>لاعبان</p>
+
+            <div class="game-card-footer">
+              <span>👥 4.1K يلعبون</span>
+              <button data-action="play-pool">العب</button>
+            </div>
+          </div>
+
+        </article>
+
+      </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         TOURNAMENTS
+    ====================================================== -->
+
+    <section class="page" id="page-tournaments">
+
+      <div class="page-heading">
+
+        <div>
+          <span class="eyebrow">COMPETITION</span>
+          <h1>البطولات</h1>
+          <p>تنافس، اجمع XP، واصعد في الترتيب.</p>
+        </div>
+
+      </div>
+
+
+      <div class="tournament-hero">
+
+        <div>
+          <span class="eyebrow">TODAY</span>
+          <h2>بطولة الدومينو الكبرى</h2>
+          <p>الجائزة الإجمالية</p>
+          <strong>◈ 50,000</strong>
+
+          <button data-action="join-tournament">
+            التسجيل في البطولة
+          </button>
+        </div>
+
+        <div class="tournament-cup">🏆</div>
+
+      </div>
+
+
+      <div class="tournament-list">
+
+        <div class="tournament-row">
+          <span>01</span>
+          <div class="avatar avatar-small">A</div>
+          <strong>Ahmed</strong>
+          <b>9,840 XP</b>
+        </div>
+
+        <div class="tournament-row">
+          <span>02</span>
+          <div class="avatar avatar-small avatar-purple">M</div>
+          <strong>Mariam</strong>
+          <b>9,210 XP</b>
+        </div>
+
+        <div class="tournament-row">
+          <span>03</span>
+          <div class="avatar avatar-small avatar-blue">K</div>
+          <strong>Kareem</strong>
+          <b>8,960 XP</b>
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         STORE
+    ====================================================== -->
+
+    <section class="page" id="page-store">
+
+      <div class="page-heading">
+
+        <div>
+          <span class="eyebrow">NEXORA STORE</span>
+          <h1>المتجر</h1>
+          <p>خصص حسابك، اشترِ الهدايا، وافتح عناصر جديدة.</p>
+        </div>
+
+        <div class="store-balance">
+          ◈ <strong id="storeCoins">2,450</strong>
+        </div>
+
+      </div>
+
+
+      <div class="store-categories">
+        <button class="active">الكل</button>
+        <button>إطارات</button>
+        <button>هدايا</button>
+        <button>تأثيرات</button>
+        <button>Badges</button>
+        <button>Premium</button>
+      </div>
+
+
+      <div class="store-feature">
+
+        <div>
+          <span class="eyebrow">LIMITED</span>
+          <h2>حزمة Neon Night</h2>
+          <p>إطار + تأثير دخول + Badge حصري.</p>
+
+          <div class="store-price">
+            <strong>◈ 1,200</strong>
+            <del>◈ 1,800</del>
+          </div>
+
+          <button class="primary-btn" data-action="buy-feature">
+            اشتري الآن
+          </button>
+        </div>
+
+        <div class="store-feature-art">
+          <div class="floating-ring"></div>
+          <div class="floating-ring ring-2"></div>
+          <div class="store-cube">N</div>
+        </div>
+
+      </div>
+
+
+      <div class="store-grid">
+
+        <article class="product-card">
+
+          <div class="product-art frame-art">
+            <div class="product-avatar">Y</div>
+          </div>
+
+          <div class="product-info">
+            <span>إطار ملف شخصي</span>
+            <strong>Neon Frame</strong>
+
+            <div>
+              <b>◈ 450</b>
+              <button data-action="buy">شراء</button>
+            </div>
+          </div>
+
+        </article>
+
+
+        <article class="product-card">
+
+          <div class="product-art gift-art">
+            <div>🎁</div>
+          </div>
+
+          <div class="product-info">
+            <span>هدية</span>
+            <strong>Royal Gift</strong>
+
+            <div>
+              <b>◈ 250</b>
+              <button data-action="buy">شراء</button>
+            </div>
+          </div>
+
+        </article>
+
+
+        <article class="product-card">
+
+          <div class="product-art badge-art">
+            <div>◆</div>
+          </div>
+
+          <div class="product-info">
+            <span>شارة</span>
+            <strong>VIP Badge</strong>
+
+            <div>
+              <b>◈ 800</b>
+              <button data-action="buy">شراء</button>
+            </div>
+          </div>
+
+        </article>
+
+
+        <article class="product-card">
+
+          <div class="product-art effect-art">
+            <div>✦</div>
+          </div>
+
+          <div class="product-info">
+            <span>تأثير</span>
+            <strong>Galaxy Effect</strong>
+
+            <div>
+              <b>◈ 600</b>
+              <button data-action="buy">شراء</button>
+            </div>
+          </div>
+
+        </article>
+
+      </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         WALLET
+    ====================================================== -->
+
+    <section class="page" id="page-wallet">
+
+      <div class="page-heading">
+
+        <div>
+          <span class="eyebrow">YOUR WALLET</span>
+          <h1>المحفظة</h1>
+          <p>إدارة العملات والهدايا والمعاملات.</p>
+        </div>
+
+        <button class="primary-btn" data-action="recharge">
+          ＋ شحن الرصيد
+        </button>
+
+      </div>
+
+
+      <div class="wallet-overview">
+
+        <div class="wallet-main">
+
+          <span>الرصيد المتاح</span>
+
+          <strong>◈ 2,450</strong>
+
+          <small>≈ قيمة الرصيد داخل NEXORA</small>
+
+          <div class="wallet-buttons">
+            <button data-action="recharge">شحن</button>
+            <button data-action="send-coins">إرسال</button>
+            <button data-action="gift">هدية</button>
+          </div>
+
+        </div>
+
+
+        <div class="wallet-stat">
+          <span>الإنفاق هذا الشهر</span>
+          <strong>◈ 3,840</strong>
+          <small>+12% عن الشهر السابق</small>
+        </div>
+
+
+        <div class="wallet-stat">
+          <span>الهدايا المستلمة</span>
+          <strong>148</strong>
+          <small>من أصدقائك</small>
+        </div>
+
+      </div>
+
+
+      <div class="wallet-history">
+
+        <div class="section-title-row">
+          <div>
+            <h2>آخر العمليات</h2>
+            <span>كل معاملاتك</span>
+          </div>
+        </div>
+
+
+        <div class="transaction-list">
+
+          <div class="transaction">
+            <span class="transaction-icon receive">↓</span>
+            <div>
+              <strong>استلام هدية</strong>
+              <small>من Ahmed</small>
+            </div>
+            <b class="positive">+250 ◈</b>
+          </div>
+
+          <div class="transaction">
+            <span class="transaction-icon spend">↑</span>
+            <div>
+              <strong>شراء Royal Gift</strong>
+              <small>المتجر</small>
+            </div>
+            <b>-250 ◈</b>
+          </div>
+
+          <div class="transaction">
+            <span class="transaction-icon receive">↓</span>
+            <div>
+              <strong>مكافأة مباراة</strong>
+              <small>Domino</small>
+            </div>
+            <b class="positive">+500 ◈</b>
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         SUBSCRIPTIONS
+    ====================================================== -->
+
+    <section class="page" id="page-subscriptions">
+
+      <div class="premium-page-header">
+
+        <span class="eyebrow">NEXORA PREMIUM</span>
+
+        <h1>افتح مستوى جديد من التجربة.</h1>
+
+        <p>
+          مزايا إضافية، تخصيص أكبر، وعناصر حصرية.
+        </p>
+
+      </div>
+
+
+      <div class="plans-grid">
+
+        <article class="plan-card">
+
+          <span>FREE</span>
+          <h2>مجاني</h2>
+          <strong>0</strong>
+          <small>للأبد</small>
+
+          <ul>
+            <li>✓ التواصل الأساسي</li>
+            <li>✓ الألعاب</li>
+            <li>✓ الفيديو</li>
+            <li>✓ الغرف</li>
+          </ul>
+
+          <button disabled>الخطة الحالية</button>
+
+        </article>
+
+
+        <article class="plan-card premium-plan">
+
+          <div class="popular-plan">الأكثر استخداماً</div>
+
+          <span>PREMIUM</span>
+          <h2>Premium</h2>
+
+          <div class="plan-price">
+            <strong>99</strong>
+            <small>جنيه / شهر</small>
+          </div>
+
+          <ul>
+            <li>✓ كل مزايا المجاني</li>
+            <li>✓ Badge Premium</li>
+            <li>✓ عناصر حصرية</li>
+            <li>✓ مزايا إضافية للملف</li>
+            <li>✓ عروض خاصة</li>
+          </ul>
+
+          <button data-action="subscribe">
+            اشترك الآن
+          </button>
+
+        </article>
+
+      </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         PROFILE
+    ====================================================== -->
+
+    <section class="page" id="page-profile">
+
+      <div class="profile-cover">
+
+        <div class="profile-cover-glow"></div>
+
+        <button class="cover-edit" data-action="edit-cover">
+          ✎
+        </button>
+
+      </div>
+
+
+      <div class="profile-main">
+
+        <div class="profile-avatar-large">
+          Y
+          <span></span>
+        </div>
+
+        <div class="profile-title">
+
+          <div>
+            <h1>يوسف <span class="verified">✓</span></h1>
+            <span>@youssef</span>
+          </div>
+
+          <button class="glass-btn" data-action="edit-profile">
+            ✎ تعديل الملف
+          </button>
+
+        </div>
+
+
+        <p class="profile-bio">
+          أهلاً بيك في عالمي على NEXORA 🚀
+          ألعاب • فيديو • أصدقاء • محتوى
+        </p>
+
+
+        <div class="profile-stats">
+
+          <div>
+            <strong>248</strong>
+            <span>منشور</span>
+          </div>
+
+          <div>
+            <strong>4.8K</strong>
+            <span>متابع</span>
+          </div>
+
+          <div>
+            <strong>382</strong>
+            <span>يتابع</span>
+          </div>
+
+          <div>
+            <strong>12</strong>
+            <span>المستوى</span>
+          </div>
+
+        </div>
+
+
+        <div class="profile-tabs">
+          <button class="active">المنشورات</button>
+          <button>الفيديو</button>
+          <button>الألعاب</button>
+          <button>الإنجازات</button>
+        </div>
+
+      </div>
+
+
+      <div class="profile-content">
+
+        <div class="profile-achievement">
+
+          <span>🏆</span>
+
+          <div>
+            <strong>مستوى 12</strong>
+            <small>1,240 / 2,000 XP للمستوى القادم</small>
+          </div>
+
+          <div class="xp-bar">
+            <i style="width:62%"></i>
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         NOTIFICATIONS
+    ====================================================== -->
+
+    <section class="page" id="page-notifications">
+
+      <div class="page-heading">
+
+        <div>
+          <span class="eyebrow">ACTIVITY</span>
+          <h1>الإشعارات</h1>
+          <p>آخر ما حدث في حسابك.</p>
+        </div>
+
+        <button class="text-btn" data-action="mark-read">
+          تحديد الكل كمقروء
+        </button>
+
+      </div>
+
+
+      <div class="notifications-list">
+
+        <div class="notification-item unread">
+
+          <div class="avatar avatar-medium gradient-avatar">A</div>
+
+          <div>
+            <strong>Ahmed أعجب بمنشورك</strong>
+            <p>منذ 4 دقائق</p>
+          </div>
+
+          <span>♡</span>
+
+        </div>
+
+
+        <div class="notification-item unread">
+
+          <div class="notification-gift">🎁</div>
+
+          <div>
+            <strong>وصلتك هدية جديدة</strong>
+            <p>Ahmed أرسل لك Royal Gift</p>
+          </div>
+
+          <span>+250 ◈</span>
+
+        </div>
+
+
+        <div class="notification-item">
+
+          <div class="avatar avatar-medium avatar-purple">M</div>
+
+          <div>
+            <strong>Mariam بدأت بثاً مباشراً</strong>
+            <p>منذ 31 دقيقة</p>
+          </div>
+
+          <button data-page="live">مشاهدة</button>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         SETTINGS
+    ====================================================== -->
+
+    <section class="page" id="page-settings">
+
+      <div class="page-heading">
+
+        <div>
+          <span class="eyebrow">SETTINGS</span>
+          <h1>الإعدادات</h1>
+          <p>تحكم في حسابك وتجربتك.</p>
+        </div>
+
+      </div>
+
+
+      <div class="settings-grid">
+
+        <div class="settings-card">
+
+          <h3>الحساب</h3>
+
+          <button>
+            <span>👤</span>
+            معلومات الحساب
+            <b>›</b>
+          </button>
+
+          <button>
+            <span>🔐</span>
+            الخصوصية والأمان
+            <b>›</b>
+          </button>
+
+          <button>
+            <span>📱</span>
+            الأجهزة المتصلة
+            <b>›</b>
+          </button>
+
+        </div>
+
+
+        <div class="settings-card">
+
+          <h3>التفضيلات</h3>
+
+          <button data-action="theme">
+            <span>◐</span>
+            المظهر
+            <b>داكن ›</b>
+          </button>
+
+          <button>
+            <span>🔔</span>
+            الإشعارات
+            <b>›</b>
+          </button>
+
+          <button>
+            <span>🌐</span>
+            اللغة
+            <b>العربية ›</b>
+          </button>
+
+        </div>
+
+
+        <div class="settings-card danger-settings">
+
+          <h3>منطقة الحساب</h3>
+
+          <button>
+            <span>⚠</span>
+            تعطيل الحساب
+            <b>›</b>
+          </button>
+
+          <button class="danger">
+            <span>↪</span>
+            تسجيل الخروج
+            <b>›</b>
+          </button>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+  </main>
+
+
+  <!-- =======================================================
+       MOBILE BOTTOM NAV
+  ======================================================== -->
+
+  <nav class="mobile-bottom-nav">
+
+    <button class="active" data-page="home">
+      <span>⌂</span>
+      <small>الرئيسية</small>
+    </button>
+
+    <button data-page="discover">
+      <span>✦</span>
+      <small>اكتشف</small>
+    </button>
+
+    <button class="create-center" data-action="create-post">
+      <span>＋</span>
+    </button>
+
+    <button data-page="messages">
+      <span>◌</span>
+      <small>الرسائل</small>
+    </button>
+
+    <button data-page="profile">
+      <span>◎</span>
+      <small>ملفي</small>
+    </button>
+
+  </nav>
+
+
+</div>
+
+
+<!-- =========================================================
+     GLOBAL TOAST
+========================================================= -->
+
+<div id="toastContainer" class="toast-container"></div>
+
+
+<!-- =========================================================
+     MODAL ROOT
+========================================================= -->
+
+<div id="modalRoot"></div>
+
+
+<!-- =========================================================
+     VIDEO CALL OVERLAY
+========================================================= -->
+
+<div class="video-call-overlay" id="videoCallOverlay">
+
+  <div class="call-background"></div>
+
+  <div class="call-topbar">
+
+    <div>
+      <span class="call-status">● متصل</span>
+      <strong id="callPartnerName">Ahmed Hassan</strong>
+    </div>
+
+    <span id="callTimer">00:00</span>
+
+  </div>
+
+
+  <div class="remote-video">
+
+    <div class="remote-placeholder">
+      <div class="avatar avatar-call">A</div>
+      <span>Ahmed Hassan</span>
+    </div>
+
+  </div>
+
+
+  <div class="local-video">
+
+    <div class="local-placeholder">
+      <span>أنت</span>
+    </div>
+
+  </div>
+
+
+  <div class="call-controls">
+
+    <button data-action="toggle-mic">🎙</button>
+    <button data-action="toggle-camera">📹</button>
+    <button data-action="speaker">🔊</button>
+    <button class="end-call" data-action="end-call">☎</button>
+
+  </div>
+
+</div>
+
+
+<!-- =========================================================
+     GAME CALL OVERLAY
+========================================================= -->
+
+<div class="game-call-overlay" id="gameCallOverlay">
+
+  <div class="game-call-top">
+
+    <button data-action="close-game">×</button>
+
+    <div>
+      <span>DOMINO CAFE</span>
+      <strong>Room #NX-4821</strong>
+    </div>
+
+    <div class="game-room-coins">
+      ◈ 2,450
+    </div>
+
+  </div>
+
+
+  <div class="game-with-video">
+
+    <div class="game-board-area">
+
+      <div class="game-table">
+
+        <div class="game-player player-top">
+          <div class="avatar avatar-medium avatar-purple">M</div>
+          <span>Mariam</span>
+        </div>
+
+
+        <div class="game-player player-left">
+          <div class="avatar avatar-medium avatar-blue">K</div>
+          <span>Kareem</span>
+        </div>
+
+
+        <div class="game-player player-right">
+          <div class="avatar avatar-medium gradient-avatar">A</div>
+          <span>Ahmed</span>
+        </div>
+
+
+        <div class="domino-center">
+
+          <div class="domino-piece game-piece">
+            <i></i><i></i>
+          </div>
+
+          <div class="domino-piece game-piece">
+            <i></i><i></i><i></i>
+          </div>
+
+          <div class="domino-piece game-piece">
+            <i></i><i></i><i></i><i></i>
+          </div>
+
+        </div>
+
+
+        <div class="game-player player-bottom">
+
+          <div class="avatar avatar-medium">Y</div>
+
+          <div>
+            <strong>يوسف</strong>
+            <span>دورك الآن</span>
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <div class="game-hand">
+
+        <button class="domino-hand-piece">
+          <i></i>
+          <i></i>
+          <hr>
+          <i></i>
+        </button>
+
+        <button class="domino-hand-piece">
+          <i></i>
+          <hr>
+          <i></i><i></i><i></i>
+        </button>
+
+        <button class="domino-hand-piece">
+          <i></i><i></i>
+          <hr>
+          <i></i><i></i>
+        </button>
+
+        <button class="domino-hand-piece">
+          <i></i><i></i><i></i>
+          <hr>
+          <i></i>
+        </button>
+
+      </div>
+
+    </div>
+
+
+    <aside class="game-video-panel">
+
+      <div class="game-video-header">
+        <strong>VIDEO CHAT</strong>
+        <span>4/4 متصلين</span>
+      </div>
+
+
+      <div class="game-video-grid">
+
+        <div class="mini-video">
+          <div class="mini-video-avatar">A</div>
+          <span>Ahmed</span>
+        </div>
+
+        <div class="mini-video">
+          <div class="mini-video-avatar purple">M</div>
+          <span>Mariam</span>
+        </div>
+
+        <div class="mini-video">
+          <div class="mini-video-avatar blue">K</div>
+          <span>Kareem</span>
+        </div>
+
+        <div class="mini-video self">
+          <div class="mini-video-avatar">Y</div>
+          <span>أنت</span>
+        </div>
+
+      </div>
+
+
+      <div class="game-chat-mini">
+
+        <div class="mini-chat-message">
+          <b>Ahmed:</b> يلا يا يوسف 🔥
+        </div>
+
+        <div class="mini-chat-message">
+          <b>Mariam:</b> دوري بعدك 😄
+        </div>
+
+      </div>
+
+
+      <div class="game-chat-input">
+        <input type="text" placeholder="اكتب..." />
+        <button>➤</button>
+      </div>
+
+    </aside>
+
+  </div>
+
+</div>
+
+
+<!-- =========================================================
+     EMOJI PANEL
+========================================================= -->
+
+<div class="emoji-panel" id="emojiPanel">
+
+  <div class="emoji-tabs">
+    <button class="active">😀</button>
+    <button>❤️</button>
+    <button>🎮</button>
+    <button>🔥</button>
+  </div>
+
+  <div class="emoji-grid">
+
+    😀 😃 😄 😁 😆 😅 😂 🤣
+    😊 😇 🙂 🙃 😉 😌 😍 🥰
+    😎 🤩 🥳 😏 😭 😂 😡
+    ❤️ 🧡 💛 💚 💙 💜 🖤
+    🔥 ✨ ⭐ 💫 🎮 🎯 🏆
+    🎁 🎉 🚀 👑 💎 😈 🤝
+
+  </div>
+
+</div>
+
+
+<!-- =========================================================
+     SCRIPTS
+========================================================= -->
+
+<script src="app.js"></script>
+<script src="games.js"></script>
+
+</body>
+</html>
