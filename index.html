@@ -2541,5 +2541,218 @@
 <script src="app.js"></script>
 <script src="games.js"></script>
 
+
+<!-- =========================================================
+     SAFE NEXORA BOOT
+     إصلاح شاشة التحميل التي كانت تعلق
+========================================================= -->
+
+<script>
+(function () {
+
+  "use strict";
+
+  const loader = document.getElementById("appLoader");
+  const app = document.getElementById("app");
+  const progress = document.getElementById("loaderProgress");
+  const percent = document.getElementById("loaderPercent");
+
+  if (!loader || !app) {
+    return;
+  }
+
+  let finished = false;
+  let startTime = Date.now();
+
+  function setProgress(value) {
+
+    value = Math.max(0, Math.min(100, value));
+
+    if (progress) {
+      progress.style.width = value + "%";
+    }
+
+    if (percent) {
+      percent.textContent = Math.round(value) + "%";
+    }
+  }
+
+
+  function revealApp() {
+
+    if (finished) {
+      return;
+    }
+
+    finished = true;
+
+    setProgress(100);
+
+    /*
+     * إزالة hidden بالقوة،
+     * لأن بعض نسخ JavaScript قد تتركه موجوداً.
+     */
+
+    app.classList.remove("hidden");
+
+    app.removeAttribute("hidden");
+
+    app.style.removeProperty("display");
+    app.style.visibility = "visible";
+    app.style.opacity = "1";
+
+
+    loader.classList.add("loader-finished");
+
+
+    setTimeout(function () {
+
+      loader.style.opacity = "0";
+      loader.style.pointerEvents = "none";
+
+      setTimeout(function () {
+        loader.style.display = "none";
+      }, 450);
+
+    }, 250);
+
+  }
+
+
+  function animateLoader() {
+
+    if (finished) {
+      return;
+    }
+
+    const elapsed = Date.now() - startTime;
+
+    const duration = 1500;
+
+    let ratio = elapsed / duration;
+
+    if (ratio > 1) {
+      ratio = 1;
+    }
+
+
+    let value;
+
+
+    /*
+     * حركة التحميل:
+     *
+     * 0%
+     * 35%
+     * 72%
+     * 94%
+     * 100%
+     */
+
+    if (ratio < 0.25) {
+
+      value = (ratio / 0.25) * 35;
+
+    } else if (ratio < 0.65) {
+
+      value = 35 + ((ratio - 0.25) / 0.40) * 37;
+
+    } else if (ratio < 0.90) {
+
+      value = 72 + ((ratio - 0.65) / 0.25) * 22;
+
+    } else {
+
+      value = 94 + ((ratio - 0.90) / 0.10) * 6;
+
+    }
+
+
+    setProgress(value);
+
+
+    if (ratio >= 1) {
+
+      revealApp();
+
+      return;
+
+    }
+
+
+    requestAnimationFrame(animateLoader);
+
+  }
+
+
+  /*
+   * مهم:
+   * لا نبدأ من 0% فعلياً على الشاشة.
+   * يبدأ التحميل من 3% حتى لا يبدو عالقاً.
+   */
+
+  setProgress(3);
+
+
+  /*
+   * تشغيل التحميل فوراً.
+   */
+
+  requestAnimationFrame(animateLoader);
+
+
+  /*
+   * لو حصل خطأ JavaScript في app.js أو games.js،
+   * المنصة لن تظل محبوسة على شاشة التحميل.
+   */
+
+  window.addEventListener("error", function () {
+
+    setTimeout(function () {
+
+      if (!finished) {
+        revealApp();
+      }
+
+    }, 500);
+
+  });
+
+
+  /*
+   * التعامل مع Promise errors.
+   */
+
+  window.addEventListener("unhandledrejection", function () {
+
+    setTimeout(function () {
+
+      if (!finished) {
+        revealApp();
+      }
+
+    }, 500);
+
+  });
+
+
+  /*
+   * حماية أخيرة:
+   * مهما حصل، NEXORA تظهر خلال 4 ثوانٍ.
+   */
+
+  setTimeout(function () {
+
+    if (!finished) {
+      revealApp();
+    }
+
+  }, 4000);
+
+
+})();
+</script>
+
+
 </body>
-</html>
+              </html>
